@@ -1,0 +1,3 @@
+"""
+Crafter test suite.
+"""

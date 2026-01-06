@@ -8,9 +8,9 @@ from . import objects
 from . import worldgen
 
 
-# Gym is an optional dependency.
+# Gymnasium is an optional dependency.
 try:
-  import gym
+  import gymnasium as gym
   DiscreteSpace = gym.spaces.Discrete
   BoxSpace = gym.spaces.Box
   DictSpace = gym.spaces.Dict
@@ -68,7 +68,9 @@ class Env(BaseClass):
   def action_names(self):
     return constants.actions
 
-  def reset(self):
+  def reset(self, seed=None, options=None):
+    if seed is not None:
+      self._seed = seed
     center = (self._world.area[0] // 2, self._world.area[1] // 2)
     self._episode += 1
     self._step = 0
@@ -79,7 +81,9 @@ class Env(BaseClass):
     self._world.add(self._player)
     self._unlocked = set()
     worldgen.generate_world(self._world, self._player, tutorial=self._tutorial)
-    return self._obs()
+    obs = self._obs()
+    info = {}
+    return obs, info
 
   def step(self, action):
     self._step += 1
@@ -105,7 +109,8 @@ class Env(BaseClass):
       reward += 1.0
     dead = self._player.health <= 0
     over = self._length and self._step >= self._length
-    done = dead or over
+    terminated = dead
+    truncated = over
     info = {
         'inventory': self._player.inventory.copy(),
         'achievements': self._player.achievements.copy(),
@@ -116,7 +121,7 @@ class Env(BaseClass):
     }
     if not self._reward:
       reward = 0.0
-    return obs, reward, done, info
+    return obs, reward, terminated, truncated, info
 
   def render(self, size=None):
     size = size or self._size

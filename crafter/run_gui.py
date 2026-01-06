@@ -81,7 +81,7 @@ def main():
       area=args.area, view=args.view, length=args.length, seed=args.seed,
       tutorial=args.tutorial)
   env = crafter.Recorder(env, args.record)
-  env.reset()
+  obs = env.reset()
   achievements = set()
   duration = 0
   return_ = 0
@@ -262,7 +262,7 @@ def main():
         running = False
       if args.death == 'reset':
         print('\nStarting a new episode.')
-        env.reset()
+        obs = env.reset()
         achievements = set()
         was_done = False
         duration = 0

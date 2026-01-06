@@ -45,9 +45,9 @@ Capabilities](https://arxiv.org/pdf/2109.06780.pdf)
 ### Quick Start (pip)
 
 ```sh
-python3 -m pip install crafter  # Install Crafter
-python3 -m pip install pygame   # Needed for human interface
-python3 -m crafter.run_gui      # Start the game
+python3 -m pip install crafter gymnasium  # Install Crafter and Gymnasium
+python3 -m pip install pygame              # Needed for human interface
+python3 -m crafter.run_gui                 # Start the game
 ```
 
 ### Local Development Setup (with UV)
@@ -62,7 +62,7 @@ uv venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install the local crafter package and pygame
-uv pip install -e . pygame
+uv pip install -e . gymnasium pygame
 
 # Start the game
 python3 -m crafter.run_gui
@@ -182,12 +182,12 @@ python3 -m crafter.run_gui --length 20000 --tutorial True  # Longer tutorial
 
 ## Interface
 
-To install Crafter, run `pip3 install crafter`. The environment follows the
-[OpenAI Gym][gym] interface. Observations are images of size (64, 64, 3) and
+To install Crafter, run `pip3 install crafter gymnasium`. The environment follows the
+[Gymnasium][gymnasium] interface (the maintained successor to OpenAI Gym). Observations are images of size (64, 64, 3) and
 outputs are one of 17 categorical actions.
 
 ```py
-import gym
+import gymnasium as gym
 import crafter
 
 env = gym.make('CrafterReward-v1')  # Or CrafterNoReward-v1
@@ -205,7 +205,9 @@ while not done:
   obs, reward, done, info = env.step(action)
 ```
 
-[gym]: https://github.com/openai/gym
+**Note:** Crafter maintains backward compatibility with the old Gym API (4-tuple step returns).
+
+[gymnasium]: https://github.com/Farama-Foundation/Gymnasium
 
 ## Evaluation
 

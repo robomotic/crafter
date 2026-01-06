@@ -24,6 +24,25 @@ class Recorder:
       raise AttributeError(name)
     return getattr(self._env, name)
 
+  def reset(self):
+    result = self._env.reset()
+    # Handle both old (obs) and new (obs, info) API
+    if isinstance(result, tuple):
+      obs, info = result
+      return obs
+    else:
+      return result
+
+  def step(self, action):
+    result = self._env.step(action)
+    # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
+    if len(result) == 5:
+      obs, reward, terminated, truncated, info = result
+      done = terminated or truncated
+      return obs, reward, done, info
+    else:
+      return result
+
 
 class StatsRecorder:
 
@@ -43,7 +62,12 @@ class StatsRecorder:
     return getattr(self._env, name)
 
   def reset(self):
-    obs = self._env.reset()
+    result = self._env.reset()
+    # Handle both old (obs) and new (obs, info) API
+    if isinstance(result, tuple):
+      obs, info = result
+    else:
+      obs = result
     self._length = 0
     self._reward = 0
     self._unlocked = None
@@ -51,7 +75,13 @@ class StatsRecorder:
     return obs
 
   def step(self, action):
-    obs, reward, done, info = self._env.step(action)
+    result = self._env.step(action)
+    # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
+    if len(result) == 5:
+      obs, reward, terminated, truncated, info = result
+      done = terminated or truncated
+    else:
+      obs, reward, done, info = result
     self._length += 1
     self._reward += info['reward']
     if done:
@@ -83,12 +113,23 @@ class VideoRecorder:
     return getattr(self._env, name)
 
   def reset(self):
-    obs = self._env.reset()
+    result = self._env.reset()
+    # Handle both old (obs) and new (obs, info) API
+    if isinstance(result, tuple):
+      obs, info = result
+    else:
+      obs = result
     self._frames = [self._env.render(self._size)]
     return obs
 
   def step(self, action):
-    obs, reward, done, info = self._env.step(action)
+    result = self._env.step(action)
+    # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
+    if len(result) == 5:
+      obs, reward, terminated, truncated, info = result
+      done = terminated or truncated
+    else:
+      obs, reward, done, info = result
     self._frames.append(self._env.render(self._size))
     if done:
       self._save()
@@ -115,7 +156,12 @@ class EpisodeRecorder:
     return getattr(self._env, name)
 
   def reset(self):
-    obs = self._env.reset()
+    result = self._env.reset()
+    # Handle both old (obs) and new (obs, info) API
+    if isinstance(result, tuple):
+      obs, info = result
+    else:
+      obs = result
     self._episode = [{'image': obs}]
     return obs
 
@@ -123,7 +169,13 @@ class EpisodeRecorder:
     # Transitions are defined from the environment perspective, meaning that a
     # transition contains the action and the resulting reward and next
     # observation produced by the environment in response to said action.
-    obs, reward, done, info = self._env.step(action)
+    result = self._env.step(action)
+    # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
+    if len(result) == 5:
+      obs, reward, terminated, truncated, info = result
+      done = terminated or truncated
+    else:
+      obs, reward, done, info = result
     transition = {
         'action': action, 'image': obs, 'reward': reward, 'done': done,
     }
@@ -166,14 +218,25 @@ class EpisodeName:
     return getattr(self._env, name)
 
   def reset(self):
-    obs = self._env.reset()
+    result = self._env.reset()
+    # Handle both old (obs) and new (obs, info) API
+    if isinstance(result, tuple):
+      obs, info = result
+    else:
+      obs = result
     self._timestamp = None
     self._unlocked = None
     self._length = 0
     return obs
 
   def step(self, action):
-    obs, reward, done, info = self._env.step(action)
+    result = self._env.step(action)
+    # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
+    if len(result) == 5:
+      obs, reward, terminated, truncated, info = result
+      done = terminated or truncated
+    else:
+      obs, reward, done, info = result
     self._length += 1
     if done:
       self._timestamp = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
