@@ -84,9 +84,28 @@ python3 -m crafter.run_gui --tutorial False
 python3 -m crafter.run_gui
 ```
 
+#### Stats Panel
+
+A real-time stats panel displays your progress alongside the game view:
+
+```sh
+# With stats panel (default)
+python3 -m crafter.run_gui --stats True
+
+# Without stats panel (console output only)
+python3 -m crafter.run_gui --stats False
+```
+
+The stats panel shows:
+- **Step Counter** - Current game step
+- **Health** - Color-coded (green >5 HP, red ≤5 HP)
+- **Reward** - Real-time reward feedback (green for positive)
+- **Achievement Counter** - Progress (e.g., 5/22)
+- **Recent Achievements** - Last 3 unlocked with ✓ checkmarks
+
 Combine with other options:
 ```sh
-python3 -m crafter.run_gui --tutorial True --health 20 --seed 42 --fps 3
+python3 -m crafter.run_gui --tutorial True --stats True --health 20 --seed 42 --fps 3
 ```
 
 #### Use Programmatically
@@ -110,6 +129,29 @@ while not done:
 - **No Zombies:** Peaceful gameplay without combat threats
 - **Constant Daylight:** Always bright daylight (no day/night cycle)
 - **Perfect for Learning:** Ideal for exploring crafting mechanics and world generation
+
+#### Episode Termination
+
+An episode ends under the same conditions in both tutorial and normal modes:
+
+- **Time Limit Reached:** 10,000 steps by default (configurable with `--length`)
+- **Player Death:** Health reaches 0
+
+**Tutorial mode (`--tutorial True`) differences:**
+- Zombies never spawn during world generation or gameplay
+- Constant daylight (easier to see and navigate)
+- Same death mechanics: skeletons, lava, drowning, and starvation still apply
+
+**Normal mode (`--tutorial False`) differences:**
+- Zombies spawn and attack (especially at night)
+- Day/night cycle affects visibility and zombie spawn rates
+- More challenging survival conditions
+
+Example custom episode length:
+```sh
+python3 -m crafter.run_gui --length 5000  # Shorter episode
+python3 -m crafter.run_gui --length 20000 --tutorial True  # Longer tutorial
+```
 
 #### Registered Gym Environments
 - `CrafterRewardTutorial-v1` - Tutorial with sparse reward signal
@@ -218,6 +260,19 @@ defined more broadly.
 | Algorithm | Score (%) | Reward | Uses | Interaction | Open Source |
 |:----------|----------:|-------:|:-----|:-----------:|:-----------:|
 | [Human](https://en.wikipedia.org/wiki/Human) | 50.5±6.8 | 14.3±2.3 | Life experience | 0 | [crafter_human_dataset](https://archive.org/details/crafter_human_dataset) |
+
+**Understanding Human Performance:**
+
+- **Score (50.5%):** This is the geometric mean of success rates across all 22 achievements. Human players successfully unlocked about half of the achievements on average during their playthroughs. The geometric mean emphasizes balanced performance—being good at many achievements is more valuable than being excellent at just a few.
+
+- **Reward (14.3±2.3):** The cumulative reward earned during episodes. In Crafter:
+  - **+1.0** for each achievement unlocked
+  - **+0.1** for each health point gained (eating food, drinking water)
+  - **-0.1** for each health point lost (damage from enemies, starvation)
+  
+  Human players typically unlock ~10 achievements per episode and maintain reasonable health, resulting in an average episode reward around 14.3.
+
+- **Human Dataset:** The [crafter_human_dataset](https://archive.org/details/crafter_human_dataset) contains gameplay recordings from human players that can be used for imitation learning or behavioral analysis.
 | [SPRING](https://arxiv.org/pdf/2305.15486.pdf) | 27.3±1.2 | 12.3±0.7 | LLM, scene description, Crafter paper | 0 | ❌ |
 | [Achievement Distillation](https://arxiv.org/pdf/2307.03486.pdf) | 21.8±1.4 | 12.6±0.3 | Reward structure | 1M | [snu-mllab/Achievement-Distillation](https://github.com/snu-mllab/Achievement-Distillation) |
 | [ELLM](https://arxiv.org/pdf/2302.06692.pdf) | — | 6.0±0.4 | LLM, scene description | 5M | ❌ |

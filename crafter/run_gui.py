@@ -6,9 +6,21 @@ try:
 except ImportError:
   print('Please install the pygame package to use the GUI.')
   raise
-from PIL import Image
 
 import crafter
+
+
+def _linux_rss_kb() -> int:
+  try:
+    with open('/proc/self/status', 'r') as f:
+      for line in f:
+        if line.startswith('VmRSS:'):
+          parts = line.split()
+          # Format: VmRSS: <value> kB
+          return int(parts[1])
+  except Exception:
+    pass
+  return -1
 
 
 def main():
@@ -25,8 +37,13 @@ def main():
   parser.add_argument('--fps', type=int, default=5)
   parser.add_argument('--wait', type=boolean, default=False)
   parser.add_argument('--tutorial', type=boolean, default=False)
+  parser.add_argument('--stats', type=boolean, default=True)
   parser.add_argument('--death', type=str, default='reset', choices=[
       'continue', 'reset', 'quit'])
+  parser.add_argument('--profile', type=boolean, default=False,
+      help='Periodically print FPS and memory usage (RSS).')
+  parser.add_argument('--profile-frames', type=int, default=60,
+      help='How many frames between profile prints when --profile is enabled.')
   args = parser.parse_args()
 
   keymap = {
@@ -72,25 +89,109 @@ def main():
   print('Diamonds exist:', env._world.count('diamond'))
 
   pygame.init()
-  screen = pygame.display.set_mode(args.window)
+  
+  # Adjust window size for stats panel if enabled
+  stats_panel_width = 300 if args.stats else 0
+  screen_width = args.window[0] + stats_panel_width
+  screen = pygame.display.set_mode((screen_width, args.window[1]))
+  pygame.display.set_caption('Crafter - Game')
+  
+  # Create a reusable surface for the game view to avoid per-frame allocations
+  base_size = (size[0], size[1])
+  render_surface = pygame.Surface(base_size).convert()
+  
+  # Setup fonts for stats panel
+  stats_font = None
+  stats_font_small = None
+  recent_achievements = []
+  reward_persistence = 30  # Frames to show reward
+  reward_display_timer = 0
+  last_reward = 0
+  last_reward_step = 0
+  if args.stats:
+    stats_font = pygame.font.Font(None, 24)
+    stats_font_small = pygame.font.Font(None, 16)
+  
   clock = pygame.time.Clock()
   running = True
+  reward = 0
+  unlocked = set()
+  frames_since_profile = 0
   while running:
 
-    # Rendering.
-    image = env.render(size)
-    if size != args.window:
-      image = Image.fromarray(image)
-      image = image.resize(args.window, resample=Image.NEAREST)
-      image = np.array(image)
-    surface = pygame.surfarray.make_surface(image.transpose((1, 0, 2)))
-    screen.blit(surface, (0, 0))
+    # Rendering game view.
+    image = env.render(base_size)
+    # Update the reusable surface with the new frame without creating a new surface
+    pygame.surfarray.blit_array(render_surface, image.transpose((1, 0, 2)))
+    # Scale only if the window size differs from the base render size
+    if base_size != tuple(args.window):
+      view_surface = pygame.transform.scale(render_surface, args.window)
+      screen.blit(view_surface, (0, 0))
+    else:
+      screen.blit(render_surface, (0, 0))
+    
+    # Rendering stats panel on the right side.
+    if args.stats:
+      # Draw stats panel background
+      stats_rect = pygame.Rect(args.window[0], 0, stats_panel_width, args.window[1])
+      pygame.draw.rect(screen, (20, 20, 20), stats_rect)
+      pygame.draw.line(screen, (100, 100, 100), (args.window[0], 0), (args.window[0], args.window[1]), 2)
+      
+      y_offset = 15
+      x_offset = args.window[0] + 15
+      
+      # Episode counter
+      episode_text = stats_font.render(f'Episode: {env._episode}', True, (200, 200, 255))
+      screen.blit(episode_text, (x_offset, y_offset))
+      y_offset += 35
+      
+      # Step counter
+      step_text = stats_font.render(f'Step: {env._step}', True, (255, 255, 255))
+      screen.blit(step_text, (x_offset, y_offset))
+      y_offset += 35
+      
+      # Health
+      health_color = (100, 255, 100) if env._player.health > 5 else (255, 100, 100)
+      health_text = stats_font.render(f'Health: {env._player.health}', True, health_color)
+      screen.blit(health_text, (x_offset, y_offset))
+      y_offset += 35
+      
+      # Persistent reward feedback
+      if reward_display_timer > 0:
+        reward_color = (0, 255, 100) if last_reward > 0 else (255, 100, 100)
+        reward_text = stats_font.render(f'Reward: +{last_reward:.1f}', True, reward_color)
+        step_text = stats_font_small.render(f'@ Step {last_reward_step}', True, (150, 150, 150))
+        screen.blit(reward_text, (x_offset, y_offset))
+        screen.blit(step_text, (x_offset + 10, y_offset + 25))
+        reward_display_timer -= 1
+      y_offset += 60
+      
+      # Achievements
+      total_achievements = len(env._player.achievements)
+      ach_text = stats_font.render(f'Achievements:\n{len(achievements)}/{total_achievements}', True, (255, 255, 100))
+      screen.blit(ach_text, (x_offset, y_offset))
+      y_offset += 65
+      
+      # Recently unlocked achievements
+      if unlocked:
+        recent_achievements = list(unlocked) + recent_achievements
+        recent_achievements = recent_achievements[:3]  # Keep last 3
+      
+      if recent_achievements:
+        recent_label = stats_font_small.render('Recent:', True, (200, 200, 200))
+        screen.blit(recent_label, (x_offset, y_offset))
+        y_offset += 22
+        for ach in recent_achievements:
+          ach_display = stats_font_small.render(f'✓ {ach}', True, (100, 255, 100))
+          screen.blit(ach_display, (x_offset + 5, y_offset))
+          y_offset += 20
+    
     pygame.display.flip()
     clock.tick(args.fps)
+    frames_since_profile += 1
 
     # Keyboard input.
     action = None
-    pygame.event.pump()
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         running = False
@@ -100,8 +201,9 @@ def main():
         action = keymap[event.key]
     if action is None:
       pressed = pygame.key.get_pressed()
-      for key, action in keymap.items():
+      for key, mapped_action in keymap.items():
         if pressed[key]:
+          action = mapped_action
           break
       else:
         if args.wait and not env._player.sleeping:
@@ -112,19 +214,42 @@ def main():
     # Environment step.
     _, reward, done, _ = env.step(env.action_names.index(action))
     duration += 1
+    
+    # Lightweight profiling output
+    if args.profile and frames_since_profile >= args.profile_frames:
+      fps = clock.get_fps()
+      rss_kb = _linux_rss_kb()
+      if rss_kb >= 0:
+        print(f'[PROFILE] fps={fps:.1f} rss={rss_kb/1024:.1f}MB step={env._step}')
+      else:
+        print(f'[PROFILE] fps={fps:.1f} rss=unknown step={env._step}')
+      frames_since_profile = 0
+    
+    # Track reward for persistent display
+    if reward:
+      last_reward = reward
+      last_reward_step = env._step
+      reward_display_timer = reward_persistence
 
-    # Achievements.
+    # Track achievements.
     unlocked = {
         name for name, count in env._player.achievements.items()
         if count > 0 and name not in achievements}
-    for name in unlocked:
+    if unlocked:
       achievements |= unlocked
-      total = len(env._player.achievements.keys())
-      print(f'Achievement ({len(achievements)}/{total}): {name}')
-    if env._step > 0 and env._step % 100 == 0:
-      print(f'Time step: {env._step}')
+      # Only print to console if stats window is disabled
+      if not args.stats:
+        total = len(env._player.achievements.keys())
+        for name in unlocked:
+          print(f'Achievement ({len(achievements)}/{total}): {name}')
+    
+    if not args.stats:
+      if env._step > 0 and env._step % 100 == 0:
+        print(f'Time step: {env._step}')
+      if reward:
+        print(f'Reward: {reward}')
+    
     if reward:
-      print(f'Reward: {reward}')
       return_ += reward
 
     # Episode end.

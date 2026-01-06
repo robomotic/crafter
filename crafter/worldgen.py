@@ -71,7 +71,6 @@ def _set_object(world, pos, player, tunnels, tutorial=False):
   elif dist > 3 and material == 'grass' and uniform() > 0.985:
     world.add(objects.Cow(world, (x, y)))
   elif dist > 10 and uniform() > 0.993 and not tutorial:
-    # Tutorial mode: skip zombie spawning
     world.add(objects.Zombie(world, (x, y), player))
   elif material == 'path' and tunnels[x, y] and uniform() > 0.95:
     world.add(objects.Skeleton(world, (x, y), player))
