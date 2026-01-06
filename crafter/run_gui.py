@@ -24,6 +24,7 @@ def main():
   parser.add_argument('--record', type=str, default=None)
   parser.add_argument('--fps', type=int, default=5)
   parser.add_argument('--wait', type=boolean, default=False)
+  parser.add_argument('--tutorial', type=boolean, default=False)
   parser.add_argument('--death', type=str, default='reset', choices=[
       'continue', 'reset', 'quit'])
   args = parser.parse_args()
@@ -60,7 +61,8 @@ def main():
   size[1] = size[1] or args.window[1]
 
   env = crafter.Env(
-      area=args.area, view=args.view, length=args.length, seed=args.seed)
+      area=args.area, view=args.view, length=args.length, seed=args.seed,
+      tutorial=args.tutorial)
   env = crafter.Recorder(env, args.record)
   env.reset()
   achievements = set()

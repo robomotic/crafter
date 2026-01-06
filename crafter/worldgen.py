@@ -7,7 +7,7 @@ from . import constants
 from . import objects
 
 
-def generate_world(world, player):
+def generate_world(world, player, tutorial=False):
   simplex = opensimplex.OpenSimplex(seed=world.random.randint(0, 2 ** 31 - 1))
   tunnels = np.zeros(world.area, bool)
   for x in range(world.area[0]):
@@ -15,7 +15,7 @@ def generate_world(world, player):
       _set_material(world, (x, y), player, tunnels, simplex)
   for x in range(world.area[0]):
     for y in range(world.area[1]):
-      _set_object(world, (x, y), player, tunnels)
+      _set_object(world, (x, y), player, tunnels, tutorial=tutorial)
 
 
 def _set_material(world, pos, player, tunnels, simplex):
@@ -61,7 +61,7 @@ def _set_material(world, pos, player, tunnels, simplex):
       world[x, y] = 'grass'
 
 
-def _set_object(world, pos, player, tunnels):
+def _set_object(world, pos, player, tunnels, tutorial=False):
   x, y = pos
   uniform = world.random.uniform
   dist = np.sqrt((x - player.pos[0]) ** 2 + (y - player.pos[1]) ** 2)
@@ -70,7 +70,8 @@ def _set_object(world, pos, player, tunnels):
     pass
   elif dist > 3 and material == 'grass' and uniform() > 0.985:
     world.add(objects.Cow(world, (x, y)))
-  elif dist > 10 and uniform() > 0.993:
+  elif dist > 10 and uniform() > 0.993 and not tutorial:
+    # Tutorial mode: skip zombie spawning
     world.add(objects.Zombie(world, (x, y), player))
   elif material == 'path' and tunnels[x, y] and uniform() > 0.95:
     world.add(objects.Skeleton(world, (x, y), player))

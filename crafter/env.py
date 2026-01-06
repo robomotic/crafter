@@ -26,7 +26,7 @@ class Env(BaseClass):
 
   def __init__(
       self, area=(64, 64), view=(9, 9), size=(64, 64),
-      reward=True, length=10000, seed=None):
+      reward=True, length=10000, seed=None, tutorial=False):
     view = np.array(view if hasattr(view, '__len__') else (view, view))
     size = np.array(size if hasattr(size, '__len__') else (size, size))
     seed = np.random.randint(0, 2**31 - 1) if seed is None else seed
@@ -36,6 +36,7 @@ class Env(BaseClass):
     self._reward = reward
     self._length = length
     self._seed = seed
+    self._tutorial = tutorial
     self._episode = 0
     self._world = engine.World(area, constants.materials, (12, 12))
     self._textures = engine.Textures(constants.root / 'assets')
@@ -77,7 +78,7 @@ class Env(BaseClass):
     self._last_health = self._player.health
     self._world.add(self._player)
     self._unlocked = set()
-    worldgen.generate_world(self._world, self._player)
+    worldgen.generate_world(self._world, self._player, tutorial=self._tutorial)
     return self._obs()
 
   def step(self, action):
@@ -134,17 +135,23 @@ class Env(BaseClass):
 
   def _update_time(self):
     # https://www.desmos.com/calculator/grfbc6rs3h
-    progress = (self._step / 300) % 1 + 0.3
-    daylight = 1 - np.abs(np.cos(np.pi * progress)) ** 3
-    self._world.daylight = daylight
+    if self._tutorial:
+      # Tutorial mode: always keep daylight at maximum
+      self._world.daylight = 1.0
+    else:
+      progress = (self._step / 300) % 1 + 0.3
+      daylight = 1 - np.abs(np.cos(np.pi * progress)) ** 3
+      self._world.daylight = daylight
 
   def _balance_chunk(self, chunk, objs):
     light = self._world.daylight
-    self._balance_object(
-        chunk, objs, objects.Zombie, 'grass', 6, 0, 0.3, 0.4,
-        lambda pos: objects.Zombie(self._world, pos, self._player),
-        lambda num, space: (
-            0 if space < 50 else 3.5 - 3 * light, 3.5 - 3 * light))
+    # Tutorial mode: disable zombie spawning
+    if not self._tutorial:
+      self._balance_object(
+          chunk, objs, objects.Zombie, 'grass', 6, 0, 0.3, 0.4,
+          lambda pos: objects.Zombie(self._world, pos, self._player),
+          lambda num, space: (
+              0 if space < 50 else 3.5 - 3 * light, 3.5 - 3 * light))
     self._balance_object(
         chunk, objs, objects.Skeleton, 'path', 7, 7, 0.1, 0.1,
         lambda pos: objects.Skeleton(self._world, pos, self._player),

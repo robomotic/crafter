@@ -42,11 +42,78 @@ Capabilities](https://arxiv.org/pdf/2109.06780.pdf)
 
 ## Play Yourself
 
+### Quick Start (pip)
+
 ```sh
 python3 -m pip install crafter  # Install Crafter
 python3 -m pip install pygame   # Needed for human interface
 python3 -m crafter.run_gui      # Start the game
 ```
+
+### Local Development Setup (with UV)
+
+If you're working with the repository locally, use UV to create an isolated virtual environment:
+
+```sh
+# Create a virtual environment with UV
+uv venv
+
+# Activate the environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install the local crafter package and pygame
+uv pip install -e . pygame
+
+# Start the game
+python3 -m crafter.run_gui
+```
+
+### Tutorial Mode
+
+A tutorial mode is available for learning the game without threats. Use it to explore the environment at your own pace:
+
+#### Launch with Pygame UI
+
+```sh
+# Tutorial mode
+python3 -m crafter.run_gui --tutorial True
+
+# Normal mode (default)
+python3 -m crafter.run_gui --tutorial False
+# or simply
+python3 -m crafter.run_gui
+```
+
+Combine with other options:
+```sh
+python3 -m crafter.run_gui --tutorial True --health 20 --seed 42 --fps 3
+```
+
+#### Use Programmatically
+
+```py
+import crafter
+
+# Create tutorial environments
+env = crafter.Env(tutorial=True, reward=True)   # Tutorial with reward
+# or
+env = crafter.Env(tutorial=True, reward=False)  # Tutorial without reward
+
+obs = env.reset()
+done = False
+while not done:
+  action = env.action_space.sample()
+  obs, reward, done, info = env.step(action)
+```
+
+#### Tutorial Features
+- **No Zombies:** Peaceful gameplay without combat threats
+- **Constant Daylight:** Always bright daylight (no day/night cycle)
+- **Perfect for Learning:** Ideal for exploring crafting mechanics and world generation
+
+#### Registered Gym Environments
+- `CrafterRewardTutorial-v1` - Tutorial with sparse reward signal
+- `CrafterNoRewardTutorial-v1` - Tutorial without reward signal
 
 <details>
 <summary>Keyboard mapping (click to expand)</summary>
