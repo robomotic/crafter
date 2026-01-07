@@ -14,6 +14,7 @@ env = crafter.Recorder(
     save_stats=True,
     save_episode=False,
     save_video=False,
+    gymnasium_api=True,
 )
 
 model = stable_baselines3.PPO('CnnPolicy', env, verbose=1)

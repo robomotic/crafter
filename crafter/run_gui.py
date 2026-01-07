@@ -1,12 +1,6 @@
 import argparse
 
 import numpy as np
-try:
-  import pygame
-except ImportError:
-  print('Please install the pygame package to use the GUI.')
-  raise
-
 import crafter
 
 
@@ -45,6 +39,12 @@ def main():
   parser.add_argument('--profile-frames', type=int, default=60,
       help='How many frames between profile prints when --profile is enabled.')
   args = parser.parse_args()
+
+  try:
+    import pygame
+  except ImportError:
+    print('Please install the pygame package to use the GUI.')
+    raise
 
   keymap = {
       pygame.K_a: 'move_left',
