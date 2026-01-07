@@ -1,6 +1,7 @@
 """
 Unit tests for Gymnasium compatibility.
 """
+
 import unittest
 import numpy as np
 
@@ -22,8 +23,8 @@ class TestGymnasiumCompatibility(unittest.TestCase):
             import crafter
         except ImportError:
             self.skipTest("Gymnasium not installed")
-        
-        env = gym.make('CrafterReward-v1')
+
+        env = gym.make("CrafterReward-v1")
         self.assertIsNotNone(env)
 
     def test_gymnasium_registered_envs(self):
@@ -33,14 +34,14 @@ class TestGymnasiumCompatibility(unittest.TestCase):
             import crafter
         except ImportError:
             self.skipTest("Gymnasium not installed")
-        
+
         expected_envs = [
-            'CrafterReward-v1',
-            'CrafterNoReward-v1',
-            'CrafterRewardTutorial-v1',
-            'CrafterNoRewardTutorial-v1',
+            "CrafterReward-v1",
+            "CrafterNoReward-v1",
+            "CrafterRewardTutorial-v1",
+            "CrafterNoRewardTutorial-v1",
         ]
-        
+
         for env_name in expected_envs:
             env = gym.make(env_name)
             self.assertIsNotNone(env, f"Failed to create {env_name}")
@@ -52,10 +53,10 @@ class TestGymnasiumCompatibility(unittest.TestCase):
             import crafter
         except ImportError:
             self.skipTest("Gymnasium not installed")
-        
-        env = gym.make('CrafterReward-v1')
+
+        env = gym.make("CrafterReward-v1")
         obs, info = env.reset()
-        
+
         self.assertIsInstance(obs, np.ndarray)
         self.assertIsInstance(info, dict)
         self.assertEqual(obs.shape, (64, 64, 3))
@@ -67,11 +68,11 @@ class TestGymnasiumCompatibility(unittest.TestCase):
             import crafter
         except ImportError:
             self.skipTest("Gymnasium not installed")
-        
-        env = gym.make('CrafterReward-v1')
+
+        env = gym.make("CrafterReward-v1")
         env.reset()
         obs, reward, terminated, truncated, info = env.step(0)
-        
+
         self.assertIsInstance(obs, np.ndarray)
         self.assertIsInstance(reward, (int, float))
         self.assertIsInstance(terminated, bool)
@@ -85,13 +86,13 @@ class TestGymnasiumCompatibility(unittest.TestCase):
             import crafter
         except ImportError:
             self.skipTest("Gymnasium not installed")
-        
-        env1 = gym.make('CrafterReward-v1')
-        env2 = gym.make('CrafterReward-v1')
-        
+
+        env1 = gym.make("CrafterReward-v1")
+        env2 = gym.make("CrafterReward-v1")
+
         obs1, _ = env1.reset(seed=42)
         obs2, _ = env2.reset(seed=42)
-        
+
         np.testing.assert_array_equal(obs1, obs2)
 
     def test_gymnasium_episode_length(self):
@@ -101,19 +102,19 @@ class TestGymnasiumCompatibility(unittest.TestCase):
             import crafter
         except ImportError:
             self.skipTest("Gymnasium not installed")
-        
-        env = gym.make('CrafterReward-v1')
+
+        env = gym.make("CrafterReward-v1")
         env.reset()
-        
+
         # Max episode steps should be 10000
         for step in range(10000):
             _, _, terminated, truncated, _ = env.step(0)
             if terminated or truncated:
                 break
-        
+
         # Should reach 10000 or terminate earlier due to death
         self.assertTrue(step >= 9999 or terminated or truncated)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

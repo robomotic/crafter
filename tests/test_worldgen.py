@@ -1,6 +1,7 @@
 """
 Unit tests for world generation.
 """
+
 import unittest
 import numpy as np
 import crafter
@@ -21,7 +22,7 @@ class TestWorldGen(unittest.TestCase):
         """Test that player spawns in the world."""
         env = crafter.Env()
         env.reset()
-        
+
         self.assertIsNotNone(env._player)
         self.assertIn(env._player, env._world.objects)
 
@@ -29,10 +30,10 @@ class TestWorldGen(unittest.TestCase):
         """Test that same seed produces same world."""
         env1 = crafter.Env(seed=12345)
         obs1, _ = env1.reset()
-        
+
         env2 = crafter.Env(seed=12345)
         obs2, _ = env2.reset()
-        
+
         # Same seed should produce identical initial observations
         np.testing.assert_array_equal(obs1, obs2)
 
@@ -40,13 +41,13 @@ class TestWorldGen(unittest.TestCase):
         """Test that different seeds produce different worlds."""
         env1 = crafter.Env(seed=111)
         obs1, _ = env1.reset()
-        
+
         env2 = crafter.Env(seed=222)
         obs2, _ = env2.reset()
-        
+
         # Different seeds should produce different observations
         self.assertFalse(np.array_equal(obs1, obs2))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
