@@ -5,8 +5,14 @@ import pathlib
 import imageio
 import numpy as np
 
+try:
+  import gymnasium as gym
+  BaseWrapper = gym.Wrapper
+except ImportError:
+  BaseWrapper = object
 
-class Recorder:
+
+class Recorder(BaseWrapper):
 
   def __init__(
       self, env, directory, save_stats=True, save_video=True,
@@ -17,6 +23,10 @@ class Recorder:
       env = VideoRecorder(env, directory, video_size)
     if directory and save_episode:
       env = EpisodeRecorder(env, directory)
+    
+    # Initialize parent class if it's a Gymnasium Wrapper
+    if BaseWrapper is not object:
+      super().__init__(env)
     self._env = env
 
   def __getattr__(self, name):
@@ -24,12 +34,12 @@ class Recorder:
       raise AttributeError(name)
     return getattr(self._env, name)
 
-  def reset(self):
-    result = self._env.reset()
+  def reset(self, **kwargs):
+    result = self._env.reset(**kwargs)
     # Handle both old (obs) and new (obs, info) API
     if isinstance(result, tuple):
       obs, info = result
-      return obs
+      return obs, info
     else:
       return result
 
@@ -38,15 +48,17 @@ class Recorder:
     # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
     if len(result) == 5:
       obs, reward, terminated, truncated, info = result
-      done = terminated or truncated
-      return obs, reward, done, info
+      return obs, reward, terminated, truncated, info
     else:
-      return result
+      obs, reward, done, info = result
+      return obs, reward, done, False, info
 
 
-class StatsRecorder:
+class StatsRecorder(BaseWrapper):
 
   def __init__(self, env, directory):
+    if BaseWrapper is not object:
+      super().__init__(env)
     self._env = env
     self._directory = pathlib.Path(directory).expanduser()
     self._directory.mkdir(exist_ok=True, parents=True)
@@ -61,46 +73,50 @@ class StatsRecorder:
       raise AttributeError(name)
     return getattr(self._env, name)
 
-  def reset(self):
-    result = self._env.reset()
+  def reset(self, **kwargs):
+    result = self._env.reset(**kwargs)
     # Handle both old (obs) and new (obs, info) API
     if isinstance(result, tuple):
       obs, info = result
     else:
       obs = result
+      info = {}
     self._length = 0
     self._reward = 0
     self._unlocked = None
     self._stats = None
-    return obs
+    return obs, info
 
   def step(self, action):
     result = self._env.step(action)
     # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
     if len(result) == 5:
       obs, reward, terminated, truncated, info = result
-      done = terminated or truncated
     else:
       obs, reward, done, info = result
+      terminated, truncated = done, False
     self._length += 1
     self._reward += info['reward']
+    done = terminated or truncated
     if done:
       self._stats = {'length': self._length, 'reward': round(self._reward, 1)}
       for key, value in info['achievements'].items():
         self._stats[f'achievement_{key}'] = value
       self._save()
-    return obs, reward, done, info
+    return obs, reward, terminated, truncated, info
 
   def _save(self):
     self._file.write(json.dumps(self._stats) + '\n')
     self._file.flush()
 
 
-class VideoRecorder:
+class VideoRecorder(BaseWrapper):
 
   def __init__(self, env, directory, size=(512, 512)):
     if not hasattr(env, 'episode_name'):
       env = EpisodeName(env)
+    if BaseWrapper is not object:
+      super().__init__(env)
     self._env = env
     self._directory = pathlib.Path(directory).expanduser()
     self._directory.mkdir(exist_ok=True, parents=True)
@@ -112,39 +128,43 @@ class VideoRecorder:
       raise AttributeError(name)
     return getattr(self._env, name)
 
-  def reset(self):
-    result = self._env.reset()
+  def reset(self, **kwargs):
+    result = self._env.reset(**kwargs)
     # Handle both old (obs) and new (obs, info) API
     if isinstance(result, tuple):
       obs, info = result
     else:
       obs = result
+      info = {}
     self._frames = [self._env.render(self._size)]
-    return obs
+    return obs, info
 
   def step(self, action):
     result = self._env.step(action)
     # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
     if len(result) == 5:
       obs, reward, terminated, truncated, info = result
-      done = terminated or truncated
     else:
       obs, reward, done, info = result
+      terminated, truncated = done, False
     self._frames.append(self._env.render(self._size))
+    done = terminated or truncated
     if done:
       self._save()
-    return obs, reward, done, info
+    return obs, reward, terminated, truncated, info
 
   def _save(self):
     filename = str(self._directory / (self._env.episode_name + '.mp4'))
     imageio.mimsave(filename, self._frames)
 
 
-class EpisodeRecorder:
+class EpisodeRecorder(BaseWrapper):
 
   def __init__(self, env, directory):
     if not hasattr(env, 'episode_name'):
       env = EpisodeName(env)
+    if BaseWrapper is not object:
+      super().__init__(env)
     self._env = env
     self._directory = pathlib.Path(directory).expanduser()
     self._directory.mkdir(exist_ok=True, parents=True)
@@ -155,15 +175,16 @@ class EpisodeRecorder:
       raise AttributeError(name)
     return getattr(self._env, name)
 
-  def reset(self):
-    result = self._env.reset()
+  def reset(self, **kwargs):
+    result = self._env.reset(**kwargs)
     # Handle both old (obs) and new (obs, info) API
     if isinstance(result, tuple):
       obs, info = result
     else:
       obs = result
+      info = {}
     self._episode = [{'image': obs}]
-    return obs
+    return obs, info
 
   def step(self, action):
     # Transitions are defined from the environment perspective, meaning that a
@@ -173,9 +194,10 @@ class EpisodeRecorder:
     # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
     if len(result) == 5:
       obs, reward, terminated, truncated, info = result
-      done = terminated or truncated
     else:
       obs, reward, done, info = result
+      terminated, truncated = done, False
+    done = terminated or truncated
     transition = {
         'action': action, 'image': obs, 'reward': reward, 'done': done,
     }
@@ -190,7 +212,7 @@ class EpisodeRecorder:
     self._episode.append(transition)
     if done:
       self._save()
-    return obs, reward, done, info
+    return obs, reward, terminated, truncated, info
 
   def _save(self):
     filename = str(self._directory / (self._env.episode_name + '.npz'))
@@ -204,9 +226,11 @@ class EpisodeRecorder:
     np.savez_compressed(filename, **episode)
 
 
-class EpisodeName:
+class EpisodeName(BaseWrapper):
 
   def __init__(self, env):
+    if BaseWrapper is not object:
+      super().__init__(env)
     self._env = env
     self._timestamp = None
     self._unlocked = None
@@ -217,31 +241,33 @@ class EpisodeName:
       raise AttributeError(name)
     return getattr(self._env, name)
 
-  def reset(self):
-    result = self._env.reset()
+  def reset(self, **kwargs):
+    result = self._env.reset(**kwargs)
     # Handle both old (obs) and new (obs, info) API
     if isinstance(result, tuple):
       obs, info = result
     else:
       obs = result
+      info = {}
     self._timestamp = None
     self._unlocked = None
     self._length = 0
-    return obs
+    return obs, info
 
   def step(self, action):
     result = self._env.step(action)
     # Handle both old (obs, reward, done, info) and new (obs, reward, terminated, truncated, info) API
     if len(result) == 5:
       obs, reward, terminated, truncated, info = result
-      done = terminated or truncated
     else:
       obs, reward, done, info = result
+      terminated, truncated = done, False
+    done = terminated or truncated
     self._length += 1
     if done:
       self._timestamp = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
       self._unlocked = sum(int(v >= 1) for v in info['achievements'].values())
-    return obs, reward, done, info
+    return obs, reward, terminated, truncated, info
 
   @property
   def episode_name(self):

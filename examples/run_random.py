@@ -24,6 +24,12 @@ while step < args.steps or not done:
   if done:
     env.reset()
     done = False
-  _, _, done, _ = env.step(action_space.sample())
+  result = env.step(action_space.sample())
+  # Handle both old and new Gymnasium API
+  if len(result) == 5:
+    _, _, terminated, truncated, _ = result
+    done = terminated or truncated
+  else:
+    _, _, done, _ = result
   step += 1
   bar.update(1)

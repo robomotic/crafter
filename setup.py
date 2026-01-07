@@ -4,7 +4,7 @@ import pathlib
 
 setuptools.setup(
     name='crafter',
-    version='1.8.3',
+    version='1.8.4',
     description='Open world survival game for reinforcement learning.',
     url='http://github.com/danijar/crafter',
     long_description=pathlib.Path('README.md').read_text(),
@@ -13,9 +13,12 @@ setuptools.setup(
     package_data={'crafter': ['data.yaml', 'assets/*']},
     entry_points={'console_scripts': ['crafter=crafter.run_gui:main']},
     install_requires=[
-        'numpy', 'imageio', 'pillow', 'opensimplex', 'ruamel.yaml',
+        'numpy', 'imageio', 'pillow', 'opensimplex', 'ruamel.yaml', 'tqdm', 'gymnasium'
     ],
-    extras_require={'gui': ['pygame']},
+    extras_require={
+        'gui': ['pygame'],
+        'rl': ['stable_baselines3']
+    },
     classifiers=[
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',

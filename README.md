@@ -44,7 +44,11 @@ Capabilities](https://arxiv.org/pdf/2109.06780.pdf)
 
 ### Quick Start (pip)
 
+First remove the old venv
 ```sh
+
+rm -rf .venv && python3 -m venv .venv && source .venv/bin/activate && pip install -e .
+
 python3 -m pip install crafter gymnasium  # Install Crafter and Gymnasium
 python3 -m pip install pygame              # Needed for human interface
 python3 -m crafter.run_gui                 # Start the game
@@ -262,6 +266,9 @@ defined more broadly.
 | Algorithm | Score (%) | Reward | Uses | Interaction | Open Source |
 |:----------|----------:|-------:|:-----|:-----------:|:-----------:|
 | [Human](https://en.wikipedia.org/wiki/Human) | 50.5±6.8 | 14.3±2.3 | Life experience | 0 | [crafter_human_dataset](https://archive.org/details/crafter_human_dataset) |
+| [SPRING](https://arxiv.org/pdf/2305.15486.pdf) | 27.3±1.2 | 12.3±0.7 | LLM, scene description, Crafter paper | 0 | ❌ |
+| [Achievement Distillation](https://arxiv.org/pdf/2307.03486.pdf) | 21.8±1.4 | 12.6±0.3 | Reward structure | 1M | [snu-mllab/Achievement-Distillation](https://github.com/snu-mllab/Achievement-Distillation) |
+| [ELLM](https://arxiv.org/pdf/2302.06692.pdf) | — | 6.0±0.4 | LLM, scene description | 5M | ❌ |
 
 **Understanding Human Performance:**
 
@@ -275,9 +282,7 @@ defined more broadly.
   Human players typically unlock ~10 achievements per episode and maintain reasonable health, resulting in an average episode reward around 14.3.
 
 - **Human Dataset:** The [crafter_human_dataset](https://archive.org/details/crafter_human_dataset) contains gameplay recordings from human players that can be used for imitation learning or behavioral analysis.
-| [SPRING](https://arxiv.org/pdf/2305.15486.pdf) | 27.3±1.2 | 12.3±0.7 | LLM, scene description, Crafter paper | 0 | ❌ |
-| [Achievement Distillation](https://arxiv.org/pdf/2307.03486.pdf) | 21.8±1.4 | 12.6±0.3 | Reward structure | 1M | [snu-mllab/Achievement-Distillation](https://github.com/snu-mllab/Achievement-Distillation) |
-| [ELLM](https://arxiv.org/pdf/2302.06692.pdf) | — | 6.0±0.4 | LLM, scene description | 5M | ❌ |
+
 
 ## Baselines
 
