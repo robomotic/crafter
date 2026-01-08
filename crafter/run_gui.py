@@ -17,6 +17,12 @@ def _linux_rss_kb() -> int:
     return -1
 
 
+def _unwrap_env(e):
+    while hasattr(e, "_env"):
+        e = e._env
+    return e
+
+
 def main():
     boolean = lambda x: bool(["False", "True"].index(x))
     parser = argparse.ArgumentParser()
@@ -53,7 +59,7 @@ def main():
         import pygame
     except ImportError:
         print("Please install the pygame package to use the GUI.")
-        raise
+        return
 
     keymap = {
         pygame.K_a: "move_left",
@@ -130,8 +136,8 @@ def main():
     frames_since_profile = 0
     while running:
 
-        # Rendering game view.
-        image = env.render(base_size)
+        # Rendering game view (use underlying env.render which accepts size).
+        image = _unwrap_env(env).render(base_size)
         # Update the reusable surface with the new frame without creating a new surface
         pygame.surfarray.blit_array(render_surface, image.transpose((1, 0, 2)))
         # Scale only if the window size differs from the base render size
