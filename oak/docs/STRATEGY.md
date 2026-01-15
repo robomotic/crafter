@@ -14,7 +14,7 @@ The maximum health is 9 points, so the health component only affects the first d
 
 **Subtasks** in Crafter are primarily identified as the **22 semantically meaningful achievements** that serve as behavioral milestones. These achievements cover a wide spectrum of abilities, including **foraging for food**, **collecting materials** (such as wood, stone, and coal), and **defeating creatures** like zombies or skeletons. 
 
-Within the **OaK (Options and Knowledge) architecture**, these subtasks are formally defined as **reward-respecting subtasks of feature attainment**. This framework suggests that the agent autonomously poses auxiliary problems to reach specific state features—such as "attaining wood" or "finding a lake"—while still prioritizing the primary extrinsic reward signal. Solving these subtasks allows the agent to develop **options**, which are high-level policies that coordinate fine-grained actions into meaningful, temporally extended behaviors.
+Within the **OaK (Options and Knowledge) architecture**, these subtasks are formally defined as **reward-respecting subtasks of feature attainment**. This framework suggests that the agent autonomously poses auxiliary problems to reach specific state features, such as "attaining wood" or "finding a lake", while still prioritizing the primary extrinsic reward signal. Solving these subtasks allows the agent to develop **options**, which are high-level policies that coordinate fine-grained actions into meaningful, temporally extended behaviors.
 
 ## Technology Tree Dependencies
 
@@ -28,7 +28,7 @@ Sub tasks:
 
 | Subtask | Prerequisites | Notes |
 |---------|---------------|-------|
-| **Collect Wood** | None | Root task - enables all crafting |
+| **Collect Wood** | None | Root task, enables all crafting |
 | **Place Table** | Collect Wood | **Required for ALL tool crafting** |
 | **Make Wood Pickaxe** | Collect Wood, Place Table | Enables stone collection |
 | **Make Wood Sword** | Collect Wood, Place Table | Basic combat weapon |
@@ -117,7 +117,7 @@ To define a GVF for a Crafter subtask, you must specify four key components:
 | **Cumulant** | $C_t$ | The quantity the agent accumulates over time | Identical to environment reward: $C_t = R_t$ (ensures survival while pursuing sub-goals) |
 | **Stopping Function** | $\beta(s)$ | Probability that accumulation stops at state $s$ | $\beta(s) = 1$ when target feature achieved (e.g., wood in inventory) |
 | **Stopping Value** | $z(s)$ | Additional value added when subtask stops | Optimistic bonus for target feature (see equation below) |
-| **Policy** | $\pi$ | The behavior to maximize expected cumulant + stopping value | Learned via TD methods to reach target feature safely |
+| **Policy** | $\pi$ | The behavior to maximize expected cumulant and stopping value | Learned via TD methods to reach target feature safely |
 
 ### 3. Formal Definition: Stopping Value Equation
 
@@ -168,7 +168,7 @@ Unlike traditional "shortest-path" subtasks that might ignore rewards to reach a
 *   **Example:** In a gridworld with a field of negative rewards, a shortest-path option might lead an agent through the field to reach a goal. A **reward-respecting option** would instead learn a roundabout path that avoids the penalties while still reaching the goal.
 
 **Crafter Application:** When pursuing "Collect Diamond," a reward-respecting option will:
-- Avoid zombies and skeletons (to prevent health loss penalty of -0.1 per HP)
+- Avoid zombies and skeletons (to prevent health loss penalty of negative 0.1 per HP)
 - Maintain food/water levels (to prevent health degradation)
 - Take the safest path rather than the shortest path
 
@@ -181,7 +181,7 @@ Within the **STOMP (SubTask, Option, Model, Planning) progression**, these subta
 
 ### 7. Learning Process
 
-By learning to solve these GVFs, the agent discovers **options** (policies and termination conditions) and builds **transition models**. These models allow the agent to plan at a higher level of temporal abstraction—planning in terms of "collecting wood" or "crafting a table" rather than individual pixel-level actions—which is essential for solving Crafter's complex technology tree.
+By learning to solve these GVFs, the agent discovers **options** (policies and termination conditions) and builds **transition models**. These models allow the agent to plan at a higher level of temporal abstraction, planning in terms of "collecting wood" or "crafting a table" rather than individual pixel-level actions, which is essential for solving Crafter's complex technology tree.
 
 The agent uses a general update procedure called **UWT (UpdateWeights&Traces)** and temporal-difference (TD) errors to learn these values off-policy from experience. Ultimately, this creates a **virtuous cycle** where new features lead to new subtasks, which in turn lead to higher levels of abstraction and reasoning.
 
