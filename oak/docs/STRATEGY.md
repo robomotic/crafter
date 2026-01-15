@@ -252,4 +252,4 @@ The following aspects require additional information from the OaK framework lite
 
 5. **Off-Policy Correction:** How the agent corrects for the behavioral policy when learning multiple option policies simultaneously from the same experience stream.
 
-5. **Off-Policy Correction:** How the agent corrects for the behavioral policy when learning multiple option policies simultaneously from the same experience stream.
+6. **Automated Discovery of Sub-tasks:** The current implementation manually defines all 22 subtasks with hand-crafted termination conditions and target states. How should the agent autonomously discover meaningful subtasks, identify which state features are worth pursuing, and automatically derive appropriate termination conditions? The OaK framework suggests feature ranking can guide this, but the specific mechanisms for automated subtask discovery and termination condition synthesis remain unclear.
