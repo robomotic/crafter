@@ -22,6 +22,10 @@ Many subtasks are **hierarchically dependent**, forming a technology tree where 
 
 ### Prerequisite Table
 
+![Figure 4: The 22 Crafter achievements and their dependencies](achievements.png)
+
+Sub tasks:
+
 | Subtask | Prerequisites | Notes |
 |---------|---------------|-------|
 | **Collect Wood** | None | Root task - enables all crafting |
@@ -234,7 +238,7 @@ A key challenge in Crafter is balancing **immediate survival** against **long-te
 
 ---
 
-## Unresolved Issues (Require External OaK Documentation)
+## Unresolved Issues (Unclear to me need to study more!)
 
 The following aspects require additional information from the OaK framework literature:
 
