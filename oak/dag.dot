@@ -1,0 +1,42 @@
+digraph CrafterTechnologyTree {
+  rankdir=LR;
+  node [shape=box, style=filled, fillcolor=lightblue];
+
+  "Collect Wood";
+  "Place Table";
+  "Eat Cow";
+  "Collect Sapling";
+  "Collect Drink";
+  "Make Wood Pickaxe";
+  "Make Wood Sword";
+  "Place Plant";
+  "Defeat Zombie";
+  "Collect Stone";
+  "Place Stone";
+  "Eat Plant";
+  "Defeat Skeleton";
+  "Make Stone Pickaxe";
+  "Make Stone Sword";
+  "Wake Up";
+  "Place Furnace";
+  "Collect Coal";
+  "Collect Iron";
+  "Collect Diamond";
+  "Make Iron Pickaxe";
+  "Make Iron Sword";
+
+  "Collect Wood" -> "Place Table";
+  "Collect Wood" -> "Make Wood Pickaxe";
+  "Collect Wood" -> "Make Wood Sword";
+  "Collect Sapling" -> "Place Plant";
+  "Collect Stone" -> "Make Stone Pickaxe";
+  "Collect Stone" -> "Make Stone Sword";
+  "Collect Stone" -> "Place Stone";
+  "Make Wood Pickaxe" -> "Collect Stone";
+  "Make Stone Pickaxe" -> "Collect Iron";
+  "Collect Coal" -> "Place Furnace";
+  "Place Furnace" -> "Collect Iron";
+  "Collect Iron" -> "Make Iron Pickaxe";
+  "Collect Iron" -> "Make Iron Sword";
+  "Make Iron Pickaxe" -> "Collect Diamond";
+}

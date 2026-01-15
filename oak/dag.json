@@ -1,0 +1,84 @@
+{
+  "nodes": [
+    "Collect Wood",
+    "Place Table",
+    "Eat Cow",
+    "Collect Sapling",
+    "Collect Drink",
+    "Make Wood Pickaxe",
+    "Make Wood Sword",
+    "Place Plant",
+    "Defeat Zombie",
+    "Collect Stone",
+    "Place Stone",
+    "Eat Plant",
+    "Defeat Skeleton",
+    "Make Stone Pickaxe",
+    "Make Stone Sword",
+    "Wake Up",
+    "Place Furnace",
+    "Collect Coal",
+    "Collect Iron",
+    "Collect Diamond",
+    "Make Iron Pickaxe",
+    "Make Iron Sword"
+  ],
+  "edges": [
+    {
+      "from": "Collect Wood",
+      "to": "Place Table"
+    },
+    {
+      "from": "Collect Wood",
+      "to": "Make Wood Pickaxe"
+    },
+    {
+      "from": "Collect Wood",
+      "to": "Make Wood Sword"
+    },
+    {
+      "from": "Collect Sapling",
+      "to": "Place Plant"
+    },
+    {
+      "from": "Collect Stone",
+      "to": "Make Stone Pickaxe"
+    },
+    {
+      "from": "Collect Stone",
+      "to": "Make Stone Sword"
+    },
+    {
+      "from": "Collect Stone",
+      "to": "Place Stone"
+    },
+    {
+      "from": "Make Wood Pickaxe",
+      "to": "Collect Stone"
+    },
+    {
+      "from": "Make Stone Pickaxe",
+      "to": "Collect Iron"
+    },
+    {
+      "from": "Collect Coal",
+      "to": "Place Furnace"
+    },
+    {
+      "from": "Place Furnace",
+      "to": "Collect Iron"
+    },
+    {
+      "from": "Collect Iron",
+      "to": "Make Iron Pickaxe"
+    },
+    {
+      "from": "Collect Iron",
+      "to": "Make Iron Sword"
+    },
+    {
+      "from": "Make Iron Pickaxe",
+      "to": "Collect Diamond"
+    }
+  ]
+}
