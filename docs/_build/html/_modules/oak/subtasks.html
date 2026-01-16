@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.subtasks &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.html">oak Package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">oak.subtasks</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oak.subtasks</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Subtask definitions for the OaK framework.</span>
+
+<span class="sd">This module defines the 22 semantically meaningful achievements in Crafter</span>
+<span class="sd">as subtasks, each with specific termination conditions based on the</span>
+<span class="sd">STRATEGY.md specification.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">oak.constants</span> <span class="kn">import</span> <span class="n">ACHIEVEMENTS</span><span class="p">,</span> <span class="n">VITAL_TO_SURVIVAL_ACHIEVEMENT</span>
+
+
+<div class="viewcode-block" id="SubtaskType"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.SubtaskType">[docs]</a><span class="k">class</span> <span class="nc">SubtaskType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Categories of subtasks in Crafter.&quot;&quot;&quot;</span>
+
+    <span class="n">RESOURCE_COLLECTION</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Collect wood, stone, coal, iron, diamond</span>
+    <span class="n">CRAFTING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Make pickaxes and swords</span>
+    <span class="n">PLACEMENT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Place table, furnace, stone, plant</span>
+    <span class="n">SURVIVAL</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Eat, drink, sleep</span>
+    <span class="n">COMBAT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Defeat zombie, skeleton</span></div>
+
+
+<div class="viewcode-block" id="SubtaskDefinition"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.SubtaskDefinition">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SubtaskDefinition</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Definition of a subtask including its termination condition.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Achievement name (e.g., &quot;collect_wood&quot;).</span>
+<span class="sd">        subtask_type: Category of the subtask.</span>
+<span class="sd">        description: Human-readable description.</span>
+<span class="sd">        inventory_key: Key to check in inventory for termination (if applicable).</span>
+<span class="sd">        is_survival: Whether this is a survival-related subtask.</span>
+<span class="sd">        priority: Priority level for option selection (higher = more important).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">subtask_type</span><span class="p">:</span> <span class="n">SubtaskType</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">inventory_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">is_survival</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span></div>
+
+
+<span class="c1"># =============================================================================</span>
+<span class="c1"># SUBTASK DEFINITIONS</span>
+<span class="c1"># =============================================================================</span>
+
+<span class="n">SUBTASK_DEFINITIONS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SubtaskDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Resource Collection</span>
+    <span class="s2">&quot;collect_wood&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;collect_wood&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">RESOURCE_COLLECTION</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Collect wood by interacting with trees&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;wood&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>  <span class="c1"># High priority - root of tech tree</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;collect_stone&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;collect_stone&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">RESOURCE_COLLECTION</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Collect stone using a wood pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;stone&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;collect_coal&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;collect_coal&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">RESOURCE_COLLECTION</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Collect coal using a stone pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;coal&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;collect_iron&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;collect_iron&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">RESOURCE_COLLECTION</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Collect iron using a stone pickaxe (requires furnace)&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;iron&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;collect_diamond&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;collect_diamond&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">RESOURCE_COLLECTION</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Collect diamond using an iron pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;diamond&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>  <span class="c1"># Terminal achievement - highest reward</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;collect_sapling&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;collect_sapling&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">RESOURCE_COLLECTION</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Collect a sapling from grass&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;sapling&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;collect_drink&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;collect_drink&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">SURVIVAL</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Drink water from a lake to restore hydration&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;drink&quot;</span><span class="p">,</span>
+        <span class="n">is_survival</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># Crafting - Pickaxes</span>
+    <span class="s2">&quot;make_wood_pickaxe&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;make_wood_pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">CRAFTING</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Craft a wood pickaxe at a table&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;wood_pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">85</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;make_stone_pickaxe&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;make_stone_pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">CRAFTING</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Craft a stone pickaxe at a table&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;stone_pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;make_iron_pickaxe&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;make_iron_pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">CRAFTING</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Craft an iron pickaxe at a furnace&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;iron_pickaxe&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># Crafting - Swords</span>
+    <span class="s2">&quot;make_wood_sword&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;make_wood_sword&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">CRAFTING</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Craft a wood sword at a table&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;wood_sword&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;make_stone_sword&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;make_stone_sword&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">CRAFTING</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Craft a stone sword at a table&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;stone_sword&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;make_iron_sword&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;make_iron_sword&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">CRAFTING</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Craft an iron sword at a furnace&quot;</span><span class="p">,</span>
+        <span class="n">inventory_key</span><span class="o">=</span><span class="s2">&quot;iron_sword&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># Placement</span>
+    <span class="s2">&quot;place_table&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;place_table&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">PLACEMENT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Place a crafting table (requires wood)&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">88</span><span class="p">,</span>  <span class="c1"># Critical for all crafting</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;place_furnace&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;place_furnace&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">PLACEMENT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Place a furnace (requires coal and stone)&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">68</span><span class="p">,</span>  <span class="c1"># Required for iron tier</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;place_stone&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;place_stone&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">PLACEMENT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Place a stone block&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;place_plant&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;place_plant&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">PLACEMENT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Plant a sapling&quot;</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># Survival - Food</span>
+    <span class="s2">&quot;eat_cow&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;eat_cow&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">SURVIVAL</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hunt and eat a cow to restore food&quot;</span><span class="p">,</span>
+        <span class="n">is_survival</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;eat_plant&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;eat_plant&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">SURVIVAL</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Eat a grown plant to restore food&quot;</span><span class="p">,</span>
+        <span class="n">is_survival</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;wake_up&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;wake_up&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">SURVIVAL</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sleep and wake up safely to restore energy&quot;</span><span class="p">,</span>
+        <span class="n">is_survival</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="c1"># Combat</span>
+    <span class="s2">&quot;defeat_zombie&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;defeat_zombie&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">COMBAT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Defeat a zombie in combat&quot;</span><span class="p">,</span>
+        <span class="n">is_survival</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Defensive action</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;defeat_skeleton&quot;</span><span class="p">:</span> <span class="n">SubtaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;defeat_skeleton&quot;</span><span class="p">,</span>
+        <span class="n">subtask_type</span><span class="o">=</span><span class="n">SubtaskType</span><span class="o">.</span><span class="n">COMBAT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Defeat a skeleton in combat&quot;</span><span class="p">,</span>
+        <span class="n">is_survival</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Defensive action</span>
+        <span class="n">priority</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="Subtask"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.Subtask">[docs]</a><span class="k">class</span> <span class="nc">Subtask</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a subtask with its termination condition.</span>
+
+<span class="sd">    A subtask encapsulates the logic for detecting when a specific</span>
+<span class="sd">    achievement has been attained, based on inventory/state changes.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        definition: The SubtaskDefinition for this subtask.</span>
+<span class="sd">        name: Achievement name.</span>
+<span class="sd">        subtask_type: Category of the subtask.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a subtask by name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Achievement name (must be in SUBTASK_DEFINITIONS).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If name is not a valid achievement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SUBTASK_DEFINITIONS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown subtask: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Valid subtasks: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">SUBTASK_DEFINITIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">SUBTASK_DEFINITIONS</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtask_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">subtask_type</span>
+
+<div class="viewcode-block" id="Subtask.check_termination"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.Subtask.check_termination">[docs]</a>    <span class="k">def</span> <span class="nf">check_termination</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">current_info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">previous_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the subtask termination condition is met.</span>
+
+<span class="sd">        The termination condition β(s) = 1 when the target feature</span>
+<span class="sd">        has been attained (achievement unlocked or inventory increased).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_info: Current info dict from environment.</span>
+<span class="sd">            previous_info: Previous info dict (for detecting changes).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if termination condition is met (β(s) = 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">achievements</span> <span class="o">=</span> <span class="n">current_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;achievements&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">current_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="c1"># Check if achievement was just unlocked</span>
+        <span class="n">current_count</span> <span class="o">=</span> <span class="n">achievements</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">previous_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prev_achievements</span> <span class="o">=</span> <span class="n">previous_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;achievements&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">prev_count</span> <span class="o">=</span> <span class="n">prev_achievements</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_count</span> <span class="o">&gt;</span> <span class="n">prev_count</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># For inventory-based subtasks, check for increase</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">inventory_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_value</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">inventory_key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">previous_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">prev_inventory</span> <span class="o">=</span> <span class="n">previous_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">prev_value</span> <span class="o">=</span> <span class="n">prev_inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">inventory_key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">current_value</span> <span class="o">&gt;</span> <span class="n">prev_value</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># For vital-based subtasks (drink, food, energy)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;collect_drink&quot;</span><span class="p">:</span>
+            <span class="n">current_drink</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;drink&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">previous_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">prev_drink</span> <span class="o">=</span> <span class="n">previous_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;drink&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">current_drink</span> <span class="o">&gt;</span> <span class="n">prev_drink</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;eat_cow&quot;</span><span class="p">,</span> <span class="s2">&quot;eat_plant&quot;</span><span class="p">):</span>
+            <span class="n">current_food</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;food&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">previous_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">prev_food</span> <span class="o">=</span> <span class="n">previous_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;food&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">current_food</span> <span class="o">&gt;</span> <span class="n">prev_food</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;wake_up&quot;</span><span class="p">:</span>
+            <span class="n">current_energy</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">previous_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">prev_energy</span> <span class="o">=</span> <span class="n">previous_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">current_energy</span> <span class="o">&gt;</span> <span class="n">prev_energy</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Subtask.is_completed"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.Subtask.is_completed">[docs]</a>    <span class="k">def</span> <span class="nf">is_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this subtask has ever been completed in the episode.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dict from environment.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the achievement has been unlocked at least once.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">achievements</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;achievements&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">return</span> <span class="n">achievements</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Subtask.get_priority"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.Subtask.get_priority">[docs]</a>    <span class="k">def</span> <span class="nf">get_priority</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the priority level for this subtask.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">priority</span></div>
+
+<div class="viewcode-block" id="Subtask.is_survival_task"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.Subtask.is_survival_task">[docs]</a>    <span class="k">def</span> <span class="nf">is_survival_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if this is a survival-related subtask.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">is_survival</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Subtask(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subtask_type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+<div class="viewcode-block" id="get_all_subtasks"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.get_all_subtasks">[docs]</a><span class="k">def</span> <span class="nf">get_all_subtasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Subtask</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create Subtask instances for all 22 achievements.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary mapping achievement names to Subtask instances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">Subtask</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">SUBTASK_DEFINITIONS</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_survival_subtasks"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.get_survival_subtasks">[docs]</a><span class="k">def</span> <span class="nf">get_survival_subtasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Subtask</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get only survival-related subtasks.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary of subtasks that are marked as survival tasks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Subtask</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">defn</span> <span class="ow">in</span> <span class="n">SUBTASK_DEFINITIONS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">defn</span><span class="o">.</span><span class="n">is_survival</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_progression_subtasks"><a class="viewcode-back" href="../../api/oak.subtasks.html#oak.get_progression_subtasks">[docs]</a><span class="k">def</span> <span class="nf">get_progression_subtasks</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Subtask</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get non-survival subtasks (tech tree progression).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary of subtasks for technology tree progression.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Subtask</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">defn</span> <span class="ow">in</span> <span class="n">SUBTASK_DEFINITIONS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">defn</span><span class="o">.</span><span class="n">is_survival</span>
+    <span class="p">}</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

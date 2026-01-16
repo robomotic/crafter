@@ -1,0 +1,471 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.interrupts &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oak.options" href="oak.options.html" />
+    <link rel="prev" title="oak.gvf" href="oak.gvf.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.html">oak Package</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.features.html">oak.features</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oak.interrupts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#oak.interrupts.VitalStatus"><code class="docutils literal notranslate"><span class="pre">VitalStatus</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.VitalStatus.name"><code class="docutils literal notranslate"><span class="pre">VitalStatus.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.VitalStatus.value"><code class="docutils literal notranslate"><span class="pre">VitalStatus.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.VitalStatus.is_critical"><code class="docutils literal notranslate"><span class="pre">VitalStatus.is_critical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.VitalStatus.is_warning"><code class="docutils literal notranslate"><span class="pre">VitalStatus.is_warning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.VitalStatus.priority"><code class="docutils literal notranslate"><span class="pre">VitalStatus.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">VitalStatus.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">VitalStatus.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">VitalStatus.is_critical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">VitalStatus.is_warning</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">VitalStatus.priority</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.interrupts.InterruptRequest"><code class="docutils literal notranslate"><span class="pre">InterruptRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptRequest.vital"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.vital</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptRequest.survival_option"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.survival_option</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptRequest.priority"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptRequest.urgent"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.urgent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.vital</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.survival_option</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">InterruptRequest.urgent</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.interrupts.InterruptManager"><code class="docutils literal notranslate"><span class="pre">InterruptManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.critical_threshold"><code class="docutils literal notranslate"><span class="pre">InterruptManager.critical_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.warning_threshold"><code class="docutils literal notranslate"><span class="pre">InterruptManager.warning_threshold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.survival_subtasks"><code class="docutils literal notranslate"><span class="pre">InterruptManager.survival_subtasks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.get_vital_status"><code class="docutils literal notranslate"><span class="pre">InterruptManager.get_vital_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.check_interrupt"><code class="docutils literal notranslate"><span class="pre">InterruptManager.check_interrupt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.check_combat_interrupt"><code class="docutils literal notranslate"><span class="pre">InterruptManager.check_combat_interrupt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.get_recommended_survival_action"><code class="docutils literal notranslate"><span class="pre">InterruptManager.get_recommended_survival_action()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.get_vital_trend"><code class="docutils literal notranslate"><span class="pre">InterruptManager.get_vital_trend()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.reset"><code class="docutils literal notranslate"><span class="pre">InterruptManager.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.interrupts.InterruptManager.should_preempt"><code class="docutils literal notranslate"><span class="pre">InterruptManager.should_preempt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="oak.html">oak Package</a></li>
+      <li class="breadcrumb-item active">oak.interrupts</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oak.interrupts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-oak.interrupts">
+<span id="oak-interrupts"></span><h1>oak.interrupts<a class="headerlink" href="#module-oak.interrupts" title="Permalink to this heading"></a></h1>
+<p>Interrupt Manager for survival options.</p>
+<p>This module implements a priority-based interrupt system that monitors
+vital statistics (health, food, water, rest) and triggers survival
+options when they fall below critical thresholds.</p>
+<p>The interrupt system can preempt ongoing progression options to ensure
+agent survival, implementing the survival-vs-progression tradeoff
+described in STRATEGY.md.</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.interrupts.InterruptManager" title="oak.interrupts.InterruptManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterruptManager</span></code></a>([critical_threshold, ...])</p></td>
+<td><p>Manages survival interrupts based on vital statistics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.interrupts.InterruptRequest" title="oak.interrupts.InterruptRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterruptRequest</span></code></a>(vital, survival_option, ...)</p></td>
+<td><p>Request to interrupt current option for survival.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.interrupts.VitalStatus" title="oak.interrupts.VitalStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VitalStatus</span></code></a>(name, value, is_critical, ...)</p></td>
+<td><p>Current status of a vital statistic.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.interrupts.VitalStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.interrupts.</span></span><span class="sig-name descname"><span class="pre">VitalStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_critical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_warning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/interrupts.html#VitalStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.VitalStatus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Current status of a vital statistic.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.VitalStatus.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#oak.interrupts.VitalStatus.name" title="Permalink to this definition"></a></dt>
+<dd><p>Vital stat name (health, food, drink, energy).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.VitalStatus.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#oak.interrupts.VitalStatus.value" title="Permalink to this definition"></a></dt>
+<dd><p>Current value (0-9).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.VitalStatus.is_critical">
+<span class="sig-name descname"><span class="pre">is_critical</span></span><a class="headerlink" href="#oak.interrupts.VitalStatus.is_critical" title="Permalink to this definition"></a></dt>
+<dd><p>Whether below critical threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.VitalStatus.is_warning">
+<span class="sig-name descname"><span class="pre">is_warning</span></span><a class="headerlink" href="#oak.interrupts.VitalStatus.is_warning" title="Permalink to this definition"></a></dt>
+<dd><p>Whether below warning threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.VitalStatus.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><a class="headerlink" href="#oak.interrupts.VitalStatus.priority" title="Permalink to this definition"></a></dt>
+<dd><p>Interrupt priority level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">is_critical</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">is_warning</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.interrupts.</span></span><span class="sig-name descname"><span class="pre">InterruptRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vital</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">survival_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">urgent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptRequest" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Request to interrupt current option for survival.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptRequest.vital">
+<span class="sig-name descname"><span class="pre">vital</span></span><a class="headerlink" href="#oak.interrupts.InterruptRequest.vital" title="Permalink to this definition"></a></dt>
+<dd><p>The vital statistic triggering the interrupt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptRequest.survival_option">
+<span class="sig-name descname"><span class="pre">survival_option</span></span><a class="headerlink" href="#oak.interrupts.InterruptRequest.survival_option" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the survival option to activate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptRequest.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><a class="headerlink" href="#oak.interrupts.InterruptRequest.priority" title="Permalink to this definition"></a></dt>
+<dd><p>Priority level of the interrupt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptRequest.urgent">
+<span class="sig-name descname"><span class="pre">urgent</span></span><a class="headerlink" href="#oak.interrupts.InterruptRequest.urgent" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this is an urgent (critical) interrupt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">vital</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">survival_option</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id6" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#id7" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">urgent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#id8" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.interrupts.</span></span><span class="sig-name descname"><span class="pre">InterruptManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">critical_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warning_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages survival interrupts based on vital statistics.</p>
+<p>Monitors health, food, water (drink), and energy levels, triggering
+appropriate survival options when levels fall below thresholds.</p>
+<p>Priority ordering (highest to lowest):
+1. Health (if being attacked)
+2. Food (prevents health loss)
+3. Water/Drink (prevents health loss)
+4. Energy (prevents health loss)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.critical_threshold">
+<span class="sig-name descname"><span class="pre">critical_threshold</span></span><a class="headerlink" href="#oak.interrupts.InterruptManager.critical_threshold" title="Permalink to this definition"></a></dt>
+<dd><p>Level below which urgent interrupt triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.warning_threshold">
+<span class="sig-name descname"><span class="pre">warning_threshold</span></span><a class="headerlink" href="#oak.interrupts.InterruptManager.warning_threshold" title="Permalink to this definition"></a></dt>
+<dd><p>Level below which normal interrupt triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.survival_subtasks">
+<span class="sig-name descname"><span class="pre">survival_subtasks</span></span><a class="headerlink" href="#oak.interrupts.InterruptManager.survival_subtasks" title="Permalink to this definition"></a></dt>
+<dd><p>Available survival subtask instances.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.get_vital_status">
+<span class="sig-name descname"><span class="pre">get_vital_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#oak.interrupts.VitalStatus" title="oak.interrupts.VitalStatus"><span class="pre">VitalStatus</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager.get_vital_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager.get_vital_status" title="Permalink to this definition"></a></dt>
+<dd><p>Extract vital status from info dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info</strong> – Info dictionary from Crafter environment.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping vital names to VitalStatus instances.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.check_interrupt">
+<span class="sig-name descname"><span class="pre">check_interrupt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_warning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.interrupts.InterruptRequest" title="oak.interrupts.InterruptRequest"><span class="pre">InterruptRequest</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager.check_interrupt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager.check_interrupt" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a survival interrupt should be triggered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>info</strong> – Current info dictionary from environment.</p></li>
+<li><p><strong>allow_warning</strong> – If True, also trigger on warning (not just critical).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>InterruptRequest if interrupt needed, None otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.check_combat_interrupt">
+<span class="sig-name descname"><span class="pre">check_combat_interrupt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.interrupts.InterruptRequest" title="oak.interrupts.InterruptRequest"><span class="pre">InterruptRequest</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager.check_combat_interrupt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager.check_combat_interrupt" title="Permalink to this definition"></a></dt>
+<dd><p>Check if combat interrupt is needed (health decreasing from attack).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>info</strong> – Current info dictionary.</p></li>
+<li><p><strong>previous_info</strong> – Previous info dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Combat InterruptRequest if under attack, None otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.get_recommended_survival_action">
+<span class="sig-name descname"><span class="pre">get_recommended_survival_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager.get_recommended_survival_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager.get_recommended_survival_action" title="Permalink to this definition"></a></dt>
+<dd><p>Get the recommended survival action based on current vitals.</p>
+<p>Considers which survival options have already been completed
+and which vitals are lowest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info</strong> – Current info dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Name of recommended survival subtask, or None if all vitals OK.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.get_vital_trend">
+<span class="sig-name descname"><span class="pre">get_vital_trend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager.get_vital_trend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager.get_vital_trend" title="Permalink to this definition"></a></dt>
+<dd><p>Get trend (change) in vital levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info</strong> – Current info dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping vital names to change since last check.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset interrupt manager state for new episode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.interrupts.InterruptManager.should_preempt">
+<span class="sig-name descname"><span class="pre">should_preempt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interrupt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#oak.interrupts.InterruptRequest" title="oak.interrupts.InterruptRequest"><span class="pre">InterruptRequest</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/interrupts.html#InterruptManager.should_preempt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.interrupts.InterruptManager.should_preempt" title="Permalink to this definition"></a></dt>
+<dd><p>Determine if interrupt should preempt the current option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_option</strong> – Name of currently active option.</p></li>
+<li><p><strong>interrupt</strong> – The interrupt request.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if interrupt should preempt current option.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oak.gvf.html" class="btn btn-neutral float-left" title="oak.gvf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oak.options.html" class="btn btn-neutral float-right" title="oak.options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

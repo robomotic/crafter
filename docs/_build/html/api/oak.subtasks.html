@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.subtasks &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oak.tech_tree" href="oak.tech_tree.html" />
+    <link rel="prev" title="oak.options" href="oak.options.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.html">oak Package</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.options.html">oak.options</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oak.subtasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#oak.subtasks.SubtaskType"><code class="docutils literal notranslate"><span class="pre">SubtaskType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskType.RESOURCE_COLLECTION"><code class="docutils literal notranslate"><span class="pre">SubtaskType.RESOURCE_COLLECTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskType.CRAFTING"><code class="docutils literal notranslate"><span class="pre">SubtaskType.CRAFTING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskType.PLACEMENT"><code class="docutils literal notranslate"><span class="pre">SubtaskType.PLACEMENT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskType.SURVIVAL"><code class="docutils literal notranslate"><span class="pre">SubtaskType.SURVIVAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskType.COMBAT"><code class="docutils literal notranslate"><span class="pre">SubtaskType.COMBAT</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.subtasks.SubtaskDefinition"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskDefinition.name"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskDefinition.subtask_type"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.subtask_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskDefinition.description"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskDefinition.inventory_key"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.inventory_key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskDefinition.is_survival"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.is_survival</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.SubtaskDefinition.priority"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.subtask_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.inventory_key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.is_survival</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">SubtaskDefinition.priority</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.subtasks.Subtask"><code class="docutils literal notranslate"><span class="pre">Subtask</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.Subtask.definition"><code class="docutils literal notranslate"><span class="pre">Subtask.definition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.Subtask.name"><code class="docutils literal notranslate"><span class="pre">Subtask.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.Subtask.subtask_type"><code class="docutils literal notranslate"><span class="pre">Subtask.subtask_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.Subtask.check_termination"><code class="docutils literal notranslate"><span class="pre">Subtask.check_termination()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.Subtask.is_completed"><code class="docutils literal notranslate"><span class="pre">Subtask.is_completed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.Subtask.get_priority"><code class="docutils literal notranslate"><span class="pre">Subtask.get_priority()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.subtasks.Subtask.is_survival_task"><code class="docutils literal notranslate"><span class="pre">Subtask.is_survival_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.subtasks.get_all_subtasks"><code class="docutils literal notranslate"><span class="pre">get_all_subtasks()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.subtasks.get_survival_subtasks"><code class="docutils literal notranslate"><span class="pre">get_survival_subtasks()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.subtasks.get_progression_subtasks"><code class="docutils literal notranslate"><span class="pre">get_progression_subtasks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="oak.html">oak Package</a></li>
+      <li class="breadcrumb-item active">oak.subtasks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oak.subtasks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-oak.subtasks">
+<span id="oak-subtasks"></span><h1>oak.subtasks<a class="headerlink" href="#module-oak.subtasks" title="Permalink to this heading"></a></h1>
+<p>Subtask definitions for the OaK framework.</p>
+<p>This module defines the 22 semantically meaningful achievements in Crafter
+as subtasks, each with specific termination conditions based on the
+STRATEGY.md specification.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.subtasks.get_all_subtasks" title="oak.subtasks.get_all_subtasks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_subtasks</span></code></a>()</p></td>
+<td><p>Create Subtask instances for all 22 achievements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.subtasks.get_progression_subtasks" title="oak.subtasks.get_progression_subtasks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_progression_subtasks</span></code></a>()</p></td>
+<td><p>Get non-survival subtasks (tech tree progression).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.subtasks.get_survival_subtasks" title="oak.subtasks.get_survival_subtasks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_survival_subtasks</span></code></a>()</p></td>
+<td><p>Get only survival-related subtasks.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Subtask</span></code></a>(name)</p></td>
+<td><p>Represents a subtask with its termination condition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.subtasks.SubtaskDefinition" title="oak.subtasks.SubtaskDefinition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SubtaskDefinition</span></code></a>(name, subtask_type, ...[, ...])</p></td>
+<td><p>Definition of a subtask including its termination condition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.subtasks.SubtaskType" title="oak.subtasks.SubtaskType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SubtaskType</span></code></a>(value)</p></td>
+<td><p>Categories of subtasks in Crafter.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.subtasks.</span></span><span class="sig-name descname"><span class="pre">SubtaskType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/subtasks.html#SubtaskType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.SubtaskType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Categories of subtasks in Crafter.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskType.RESOURCE_COLLECTION">
+<span class="sig-name descname"><span class="pre">RESOURCE_COLLECTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#oak.subtasks.SubtaskType.RESOURCE_COLLECTION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskType.CRAFTING">
+<span class="sig-name descname"><span class="pre">CRAFTING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#oak.subtasks.SubtaskType.CRAFTING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskType.PLACEMENT">
+<span class="sig-name descname"><span class="pre">PLACEMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#oak.subtasks.SubtaskType.PLACEMENT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskType.SURVIVAL">
+<span class="sig-name descname"><span class="pre">SURVIVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#oak.subtasks.SubtaskType.SURVIVAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskType.COMBAT">
+<span class="sig-name descname"><span class="pre">COMBAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#oak.subtasks.SubtaskType.COMBAT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.subtasks.</span></span><span class="sig-name descname"><span class="pre">SubtaskDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#oak.subtasks.SubtaskType" title="oak.subtasks.SubtaskType"><span class="pre">SubtaskType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">inventory_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_survival</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/subtasks.html#SubtaskDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.SubtaskDefinition" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Definition of a subtask including its termination condition.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskDefinition.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#oak.subtasks.SubtaskDefinition.name" title="Permalink to this definition"></a></dt>
+<dd><p>Achievement name (e.g., “collect_wood”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskDefinition.subtask_type">
+<span class="sig-name descname"><span class="pre">subtask_type</span></span><a class="headerlink" href="#oak.subtasks.SubtaskDefinition.subtask_type" title="Permalink to this definition"></a></dt>
+<dd><p>Category of the subtask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#oak.subtasks.SubtaskType" title="oak.subtasks.SubtaskType">oak.subtasks.SubtaskType</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskDefinition.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#oak.subtasks.SubtaskDefinition.description" title="Permalink to this definition"></a></dt>
+<dd><p>Human-readable description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskDefinition.inventory_key">
+<span class="sig-name descname"><span class="pre">inventory_key</span></span><a class="headerlink" href="#oak.subtasks.SubtaskDefinition.inventory_key" title="Permalink to this definition"></a></dt>
+<dd><p>Key to check in inventory for termination (if applicable).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskDefinition.is_survival">
+<span class="sig-name descname"><span class="pre">is_survival</span></span><a class="headerlink" href="#oak.subtasks.SubtaskDefinition.is_survival" title="Permalink to this definition"></a></dt>
+<dd><p>Whether this is a survival-related subtask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.SubtaskDefinition.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><a class="headerlink" href="#oak.subtasks.SubtaskDefinition.priority" title="Permalink to this definition"></a></dt>
+<dd><p>Priority level for option selection (higher = more important).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">subtask_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#oak.subtasks.SubtaskType" title="oak.subtasks.SubtaskType"><span class="pre">SubtaskType</span></a></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">inventory_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">is_survival</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.subtasks.</span></span><span class="sig-name descname"><span class="pre">Subtask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/subtasks.html#Subtask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.Subtask" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Represents a subtask with its termination condition.</p>
+<p>A subtask encapsulates the logic for detecting when a specific
+achievement has been attained, based on inventory/state changes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask.definition">
+<span class="sig-name descname"><span class="pre">definition</span></span><a class="headerlink" href="#oak.subtasks.Subtask.definition" title="Permalink to this definition"></a></dt>
+<dd><p>The SubtaskDefinition for this subtask.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#oak.subtasks.Subtask.name" title="Permalink to this definition"></a></dt>
+<dd><p>Achievement name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask.subtask_type">
+<span class="sig-name descname"><span class="pre">subtask_type</span></span><a class="headerlink" href="#oak.subtasks.Subtask.subtask_type" title="Permalink to this definition"></a></dt>
+<dd><p>Category of the subtask.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask.check_termination">
+<span class="sig-name descname"><span class="pre">check_termination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/subtasks.html#Subtask.check_termination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.Subtask.check_termination" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the subtask termination condition is met.</p>
+<p>The termination condition β(s) = 1 when the target feature
+has been attained (achievement unlocked or inventory increased).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_info</strong> – Current info dict from environment.</p></li>
+<li><p><strong>previous_info</strong> – Previous info dict (for detecting changes).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if termination condition is met (β(s) = 1).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask.is_completed">
+<span class="sig-name descname"><span class="pre">is_completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/subtasks.html#Subtask.is_completed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.Subtask.is_completed" title="Permalink to this definition"></a></dt>
+<dd><p>Check if this subtask has ever been completed in the episode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info</strong> – Current info dict from environment.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the achievement has been unlocked at least once.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask.get_priority">
+<span class="sig-name descname"><span class="pre">get_priority</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/subtasks.html#Subtask.get_priority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.Subtask.get_priority" title="Permalink to this definition"></a></dt>
+<dd><p>Get the priority level for this subtask.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.subtasks.Subtask.is_survival_task">
+<span class="sig-name descname"><span class="pre">is_survival_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/subtasks.html#Subtask.is_survival_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.Subtask.is_survival_task" title="Permalink to this definition"></a></dt>
+<dd><p>Check if this is a survival-related subtask.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oak.subtasks.get_all_subtasks">
+<span class="sig-prename descclassname"><span class="pre">oak.subtasks.</span></span><span class="sig-name descname"><span class="pre">get_all_subtasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/subtasks.html#get_all_subtasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.get_all_subtasks" title="Permalink to this definition"></a></dt>
+<dd><p>Create Subtask instances for all 22 achievements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary mapping achievement names to Subtask instances.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oak.subtasks.get_survival_subtasks">
+<span class="sig-prename descclassname"><span class="pre">oak.subtasks.</span></span><span class="sig-name descname"><span class="pre">get_survival_subtasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/subtasks.html#get_survival_subtasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.get_survival_subtasks" title="Permalink to this definition"></a></dt>
+<dd><p>Get only survival-related subtasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of subtasks that are marked as survival tasks.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oak.subtasks.get_progression_subtasks">
+<span class="sig-prename descclassname"><span class="pre">oak.subtasks.</span></span><span class="sig-name descname"><span class="pre">get_progression_subtasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/subtasks.html#get_progression_subtasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.subtasks.get_progression_subtasks" title="Permalink to this definition"></a></dt>
+<dd><p>Get non-survival subtasks (tech tree progression).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of subtasks for technology tree progression.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oak.options.html" class="btn btn-neutral float-left" title="oak.options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oak.tech_tree.html" class="btn btn-neutral float-right" title="oak.tech_tree" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

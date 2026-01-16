@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.tech_tree &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.html">oak Package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">oak.tech_tree</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oak.tech_tree</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Technology Tree management for Crafter achievements.</span>
+
+<span class="sd">This module provides the TechnologyTree class that manages the directed</span>
+<span class="sd">acyclic graph (DAG) of achievement dependencies, enabling queries for</span>
+<span class="sd">available subtasks and prerequisite checking.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span> <span class="nn">oak.constants</span> <span class="kn">import</span> <span class="n">ACHIEVEMENTS</span><span class="p">,</span> <span class="n">PREREQUISITES</span>
+
+
+<div class="viewcode-block" id="TechnologyTree"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree">[docs]</a><span class="k">class</span> <span class="nc">TechnologyTree</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages the technology tree (DAG) of Crafter achievements.</span>
+
+<span class="sd">    The technology tree defines which achievements depend on others,</span>
+<span class="sd">    enabling the agent to determine which subtasks are currently available</span>
+<span class="sd">    based on completed prerequisites.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        prerequisites: Dict mapping each achievement to its required prerequisites.</span>
+<span class="sd">        dependents: Dict mapping each achievement to achievements that depend on it.</span>
+<span class="sd">        root_achievements: Set of achievements with no prerequisites.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dag_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the technology tree.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dag_path: Optional path to dag.json file. If None, uses built-in</span>
+<span class="sd">                     prerequisites from constants.py.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dag_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dag_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_from_json</span><span class="p">(</span><span class="n">dag_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">PREREQUISITES</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># Build reverse mapping (what depends on each achievement)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dependents</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ACHIEVEMENTS</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">achievement</span><span class="p">,</span> <span class="n">prereqs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">prereq</span> <span class="ow">in</span> <span class="n">prereqs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">prereq</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependents</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dependents</span><span class="p">[</span><span class="n">prereq</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">achievement</span><span class="p">)</span>
+
+        <span class="c1"># Identify root achievements (no prerequisites)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_achievements</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">a</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">prereqs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prereqs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Cache for topological order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topo_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_load_from_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dag_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load prerequisites from dag.json file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dag_path: Path to the JSON file containing edges.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dag_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="c1"># Initialize all achievements with empty prerequisites</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ACHIEVEMENTS</span><span class="p">}</span>
+
+        <span class="c1"># Parse edges from JSON</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;edges&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">from_node</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">to_node</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">to_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span><span class="p">[</span><span class="n">to_node</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">from_node</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TechnologyTree.get_prerequisites"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.get_prerequisites">[docs]</a>    <span class="k">def</span> <span class="nf">get_prerequisites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the direct prerequisites for an achievement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            achievement: Name of the achievement.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Set of achievement names that are direct prerequisites.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">achievement</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.get_all_prerequisites"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.get_all_prerequisites">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_prerequisites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all prerequisites (transitive closure) for an achievement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            achievement: Name of the achievement.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Set of all achievements that must be completed first.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_prereqs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_prerequisites</span><span class="p">(</span><span class="n">achievement</span><span class="p">))</span>
+
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">prereq</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">prereq</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_prereqs</span><span class="p">:</span>
+                <span class="n">all_prereqs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prereq</span><span class="p">)</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_prerequisites</span><span class="p">(</span><span class="n">prereq</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">all_prereqs</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.get_dependents"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.get_dependents">[docs]</a>    <span class="k">def</span> <span class="nf">get_dependents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get achievements that directly depend on this one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            achievement: Name of the achievement.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Set of achievement names that require this as a prerequisite.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">achievement</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.are_prerequisites_met"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.are_prerequisites_met">[docs]</a>    <span class="k">def</span> <span class="nf">are_prerequisites_met</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">completed</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if all prerequisites for an achievement are completed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            achievement: Name of the achievement to check.</span>
+<span class="sd">            completed: Set of already completed achievement names.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if all prerequisites are in the completed set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prereqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prerequisites</span><span class="p">(</span><span class="n">achievement</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">prereqs</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">completed</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.get_available_subtasks"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.get_available_subtasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_subtasks</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">completed</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">exclude_completed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get subtasks that are currently available to pursue.</span>
+
+<span class="sd">        An achievement is available if:</span>
+<span class="sd">        1. All its prerequisites are completed</span>
+<span class="sd">        2. It has not been completed yet (if exclude_completed=True)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            completed: Set of completed achievement names.</span>
+<span class="sd">            exclude_completed: Whether to exclude already completed achievements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of available achievement names, ordered by topological sort.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">achievement</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topological_order</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">exclude_completed</span> <span class="ow">and</span> <span class="n">achievement</span> <span class="ow">in</span> <span class="n">completed</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">are_prerequisites_met</span><span class="p">(</span><span class="n">achievement</span><span class="p">,</span> <span class="n">completed</span><span class="p">):</span>
+                <span class="n">available</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">achievement</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">available</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.get_next_subtasks"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.get_next_subtasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_subtasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completed</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the next recommended subtasks based on tech tree progression.</span>
+
+<span class="sd">        Prioritizes achievements that unlock the most dependents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            completed: Set of completed achievement names.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of recommended next achievements, sorted by priority.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_subtasks</span><span class="p">(</span><span class="n">completed</span><span class="p">)</span>
+
+        <span class="c1"># Score each available subtask by number of unlockable dependents</span>
+        <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="n">achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_dependents</span><span class="p">(</span><span class="n">achievement</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">available</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">score</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.topological_order"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.topological_order">[docs]</a>    <span class="k">def</span> <span class="nf">topological_order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get achievements in topological order (prerequisites before dependents).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of achievement names in topological order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topo_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topo_order</span>
+
+        <span class="c1"># Kahn&#39;s algorithm</span>
+        <span class="n">in_degree</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">set</span><span class="p">()))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ACHIEVEMENTS</span><span class="p">}</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">deg</span> <span class="ow">in</span> <span class="n">in_degree</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">deg</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">dependent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">set</span><span class="p">()):</span>
+                <span class="n">in_degree</span><span class="p">[</span><span class="n">dependent</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">in_degree</span><span class="p">[</span><span class="n">dependent</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dependent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topo_order</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.get_depth"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.get_depth">[docs]</a>    <span class="k">def</span> <span class="nf">get_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the depth of an achievement in the technology tree.</span>
+
+<span class="sd">        Depth is the length of the longest path from any root to this achievement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            achievement: Name of the achievement.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Depth in the tree (0 for root achievements).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">achievement</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_achievements</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">prereqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prerequisites</span><span class="p">(</span><span class="n">achievement</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prereqs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_depth</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prereqs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.get_critical_path_to"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.get_critical_path_to">[docs]</a>    <span class="k">def</span> <span class="nf">get_critical_path_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the critical (longest) path to an achievement.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            achievement: Target achievement name.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of achievements in order from root to target.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">achievement</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_achievements</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">achievement</span><span class="p">]</span>
+
+        <span class="n">prereqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prerequisites</span><span class="p">(</span><span class="n">achievement</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prereqs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">achievement</span><span class="p">]</span>
+
+        <span class="c1"># Find the prerequisite with the longest path</span>
+        <span class="n">longest_path</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">prereq</span> <span class="ow">in</span> <span class="n">prereqs</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_critical_path_to</span><span class="p">(</span><span class="n">prereq</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">longest_path</span><span class="p">):</span>
+                <span class="n">longest_path</span> <span class="o">=</span> <span class="n">path</span>
+
+        <span class="k">return</span> <span class="n">longest_path</span> <span class="o">+</span> <span class="p">[</span><span class="n">achievement</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TechnologyTree.to_dict"><a class="viewcode-back" href="../../api/oak.tech_tree.html#oak.TechnologyTree.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export the technology tree as a dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary representation suitable for JSON serialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">ACHIEVEMENTS</span><span class="p">),</span>
+            <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">prereq</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">achievement</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">achievement</span><span class="p">,</span> <span class="n">prereqs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerequisites</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">prereq</span> <span class="ow">in</span> <span class="n">prereqs</span>
+            <span class="p">],</span>
+        <span class="p">}</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

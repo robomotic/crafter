@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.gvf &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oak.interrupts" href="oak.interrupts.html" />
+    <link rel="prev" title="oak.features" href="oak.features.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.html">oak Package</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oak.gvf</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#oak.gvf.GVFComponents"><code class="docutils literal notranslate"><span class="pre">GVFComponents</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GVFComponents.cumulant_fn"><code class="docutils literal notranslate"><span class="pre">GVFComponents.cumulant_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GVFComponents.stopping_fn"><code class="docutils literal notranslate"><span class="pre">GVFComponents.stopping_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GVFComponents.stopping_value_fn"><code class="docutils literal notranslate"><span class="pre">GVFComponents.stopping_value_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GVFComponents.policy"><code class="docutils literal notranslate"><span class="pre">GVFComponents.policy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GVFComponents.cumulant_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">GVFComponents.stopping_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">GVFComponents.stopping_value_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">GVFComponents.policy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.gvf.GeneralValueFunction"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.target_feature_index"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.target_feature_index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.feature_dim"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.feature_dim</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.weights"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.weights</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.optimistic_weight"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.optimistic_weight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.traces"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.traces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.cumulant"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.cumulant()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.stopping_condition"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.stopping_condition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.stopping_value"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.stopping_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.value"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.select_optimistic_weight"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.select_optimistic_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.td_error"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.td_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.update"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GeneralValueFunction.reset_traces"><code class="docutils literal notranslate"><span class="pre">GeneralValueFunction.reset_traces()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.gvf.GVFFactory"><code class="docutils literal notranslate"><span class="pre">GVFFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GVFFactory.create_for_achievement"><code class="docutils literal notranslate"><span class="pre">GVFFactory.create_for_achievement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.gvf.GVFFactory.create_all"><code class="docutils literal notranslate"><span class="pre">GVFFactory.create_all()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="oak.html">oak Package</a></li>
+      <li class="breadcrumb-item active">oak.gvf</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oak.gvf.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-oak.gvf">
+<span id="oak-gvf"></span><h1>oak.gvf<a class="headerlink" href="#module-oak.gvf" title="Permalink to this heading"></a></h1>
+<p>General Value Functions (GVFs) for the OaK framework.</p>
+<p>This module implements the GVF formalism as described in STRATEGY.md,
+with the four key components: cumulant, stopping function, stopping value,
+and policy.</p>
+<p>GVFs enable reward-respecting subtasks of feature attainment, where the
+agent pursues specific state features while still maximizing the primary
+reward signal.</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.gvf.GVFComponents" title="oak.gvf.GVFComponents"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GVFComponents</span></code></a>(cumulant_fn, stopping_fn, ...)</p></td>
+<td><p>Container for the four components of a GVF.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.gvf.GVFFactory" title="oak.gvf.GVFFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GVFFactory</span></code></a>([feature_dim, learning_rate, ...])</p></td>
+<td><p>Factory for creating GVFs for Crafter subtasks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralValueFunction</span></code></a>(target_feature_index[, ...])</p></td>
+<td><p>General Value Function for reward-respecting feature attainment.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.gvf.GVFComponents">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.gvf.</span></span><span class="sig-name descname"><span class="pre">GVFComponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cumulant_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopping_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopping_value_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/gvf.html#GVFComponents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GVFComponents" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Container for the four components of a GVF.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GVFComponents.cumulant_fn">
+<span class="sig-name descname"><span class="pre">cumulant_fn</span></span><a class="headerlink" href="#oak.gvf.GVFComponents.cumulant_fn" title="Permalink to this definition"></a></dt>
+<dd><p>Function that returns C_t given reward.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>], <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GVFComponents.stopping_fn">
+<span class="sig-name descname"><span class="pre">stopping_fn</span></span><a class="headerlink" href="#oak.gvf.GVFComponents.stopping_fn" title="Permalink to this definition"></a></dt>
+<dd><p>Function β(s) that returns termination probability.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a> | None], <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GVFComponents.stopping_value_fn">
+<span class="sig-name descname"><span class="pre">stopping_value_fn</span></span><a class="headerlink" href="#oak.gvf.GVFComponents.stopping_value_fn" title="Permalink to this definition"></a></dt>
+<dd><p>Function z(s) for additional value at termination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a>], <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GVFComponents.policy">
+<span class="sig-name descname"><span class="pre">policy</span></span><a class="headerlink" href="#oak.gvf.GVFComponents.policy" title="Permalink to this definition"></a></dt>
+<dd><p>The behavior policy π for this GVF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a>], <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">cumulant_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">stopping_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">stopping_value_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">policy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.gvf.</span></span><span class="sig-name descname"><span class="pre">GeneralValueFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_feature_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>General Value Function for reward-respecting feature attainment.</p>
+<p>A GVF predicts the expected sum of a cumulant signal plus a stopping
+value, discounted by continuing probability. For reward-respecting
+subtasks, the cumulant equals the environment reward (C_t = R_t).</p>
+<dl class="simple">
+<dt>The stopping value z_i(s) is defined as:</dt><dd><p>z_i(s) = w^T x(s) - w_i x_i(s) + w̄_i x_i(s)</p>
+</dd>
+</dl>
+<p>This creates an optimistic bonus for terminating in states where
+the target feature x_i is high.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.target_feature_index">
+<span class="sig-name descname"><span class="pre">target_feature_index</span></span><a class="headerlink" href="#oak.gvf.GeneralValueFunction.target_feature_index" title="Permalink to this definition"></a></dt>
+<dd><p>Index of the target feature in x(s).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.feature_dim">
+<span class="sig-name descname"><span class="pre">feature_dim</span></span><a class="headerlink" href="#oak.gvf.GeneralValueFunction.feature_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Dimension of the feature vector.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.weights">
+<span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#oak.gvf.GeneralValueFunction.weights" title="Permalink to this definition"></a></dt>
+<dd><p>Current weight vector w for value function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.optimistic_weight">
+<span class="sig-name descname"><span class="pre">optimistic_weight</span></span><a class="headerlink" href="#oak.gvf.GeneralValueFunction.optimistic_weight" title="Permalink to this definition"></a></dt>
+<dd><p>Bonus weight w̄_i for target feature.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.traces">
+<span class="sig-name descname"><span class="pre">traces</span></span><a class="headerlink" href="#oak.gvf.GeneralValueFunction.traces" title="Permalink to this definition"></a></dt>
+<dd><p>Eligibility traces for learning.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.cumulant">
+<span class="sig-name descname"><span class="pre">cumulant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.cumulant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.cumulant" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the cumulant C_t for this GVF.</p>
+<p>For reward-respecting subtasks, C_t = R_t (environment reward).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reward</strong> – Environment reward at time t.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cumulant value (equals reward for reward-respecting GVFs).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.stopping_condition">
+<span class="sig-name descname"><span class="pre">stopping_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.stopping_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.stopping_condition" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the stopping probability β(s).</p>
+<p>Returns 1.0 when the target feature has been attained (increased),
+0.0 otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_features</strong> – Current feature vector x(s).</p></li>
+<li><p><strong>previous_features</strong> – Previous feature vector x(s’) for change detection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Stopping probability β(s) ∈ {0.0, 1.0}.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.stopping_value">
+<span class="sig-name descname"><span class="pre">stopping_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.stopping_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.stopping_value" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the stopping value z_i(s).</p>
+<dl class="simple">
+<dt>z_i(s) = w^T x(s) - w_i x_i(s) + w̄_i x_i(s)</dt><dd><p>= w^T x(s) + (w̄_i - w_i) x_i(s)</p>
+</dd>
+</dl>
+<p>This replaces the standard weight of the target feature with
+an optimistic bonus weight, creating incentive to terminate
+in states where the target feature is present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> – Feature vector x(s).</p></li>
+<li><p><strong>weights</strong> – Optional weight vector (uses self.weights if None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Stopping value z_i(s).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – If optimistic weight not set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.value" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the current value estimate V(s) = w^T x(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>features</strong> – Feature vector x(s).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value estimate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.select_optimistic_weight">
+<span class="sig-name descname"><span class="pre">select_optimistic_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.select_optimistic_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.select_optimistic_weight" title="Permalink to this definition"></a></dt>
+<dd><p>Set the optimistic bonus weight w̄_i for the target feature.</p>
+<p>The choice of this weight affects the trade-off between
+exploration (high bonus) and exploitation (low bonus).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>weight</strong> – The optimistic weight value (should be &gt; w_i).</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The optimal selection of w̄_i is domain-dependent and
+currently requires manual tuning. See STRATEGY.md
+‘Unresolved Issues’ section 1.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.td_error">
+<span class="sig-name descname"><span class="pre">td_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.td_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.td_error" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the TD error δ for this GVF.</p>
+<p>δ = C_t + γ (1 - β) V(s’) + β z(s’) - V(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reward</strong> – Environment reward r_t.</p></li>
+<li><p><strong>current_features</strong> – Features x(s) at current state.</p></li>
+<li><p><strong>next_features</strong> – Features x(s’) at next state.</p></li>
+<li><p><strong>done</strong> – Whether episode terminated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TD error value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update weights using TD learning with eligibility traces.</p>
+<p>Uses the UWT (UpdateWeights&amp;Traces) procedure to learn
+off-policy from experience.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reward</strong> – Environment reward r_t.</p></li>
+<li><p><strong>current_features</strong> – Features x(s) at current state.</p></li>
+<li><p><strong>next_features</strong> – Features x(s’) at next state.</p></li>
+<li><p><strong>done</strong> – Whether episode terminated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TD error for logging.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – UWT update not fully implemented.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GeneralValueFunction.reset_traces">
+<span class="sig-name descname"><span class="pre">reset_traces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GeneralValueFunction.reset_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GeneralValueFunction.reset_traces" title="Permalink to this definition"></a></dt>
+<dd><p>Reset eligibility traces to zero (start of episode).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.gvf.GVFFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.gvf.</span></span><span class="sig-name descname"><span class="pre">GVFFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.99</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/gvf.html#GVFFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GVFFactory" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Factory for creating GVFs for Crafter subtasks.</p>
+<p>Provides convenient methods to create properly configured GVFs
+for each of the 22 achievements.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GVFFactory.create_for_achievement">
+<span class="sig-name descname"><span class="pre">create_for_achievement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">achievement_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><span class="pre">GeneralValueFunction</span></a></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GVFFactory.create_for_achievement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GVFFactory.create_for_achievement" title="Permalink to this definition"></a></dt>
+<dd><p>Create a GVF for a specific achievement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>achievement_name</strong> – Name of the achievement (for logging).</p></li>
+<li><p><strong>feature_index</strong> – Index of the achievement in feature vector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Configured GeneralValueFunction instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.gvf.GVFFactory.create_all">
+<span class="sig-name descname"><span class="pre">create_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">achievement_to_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><span class="pre">GeneralValueFunction</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/gvf.html#GVFFactory.create_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.gvf.GVFFactory.create_all" title="Permalink to this definition"></a></dt>
+<dd><p>Create GVFs for all achievements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>achievement_to_index</strong> – Mapping from achievement names to feature indices.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping achievement names to GVF instances.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oak.features.html" class="btn btn-neutral float-left" title="oak.features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oak.interrupts.html" class="btn btn-neutral float-right" title="oak.interrupts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

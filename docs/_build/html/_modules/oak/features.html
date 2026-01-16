@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.features &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.html">oak Package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">oak.features</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oak.features</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Feature extraction for the OaK framework.</span>
+
+<span class="sd">This module provides the FeatureExtractor class that converts Crafter&#39;s</span>
+<span class="sd">info dictionary into a feature vector x(s) suitable for GVF computation.</span>
+
+<span class="sd">Feature Vector Structure (40 dimensions):</span>
+<span class="sd">    - Binary achievement features (22)</span>
+<span class="sd">    - Inventory count features (12)</span>
+<span class="sd">    - Vital status features (4)</span>
+<span class="sd">    - Placed object features (2)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">oak.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ACHIEVEMENTS</span><span class="p">,</span>
+    <span class="n">INVENTORY_ITEMS</span><span class="p">,</span>
+    <span class="n">VITAL_STATS</span><span class="p">,</span>
+    <span class="n">MAX_INVENTORY_VALUE</span><span class="p">,</span>
+    <span class="n">MAX_VITAL_VALUE</span><span class="p">,</span>
+    <span class="n">TOTAL_FEATURE_DIM</span><span class="p">,</span>
+    <span class="n">NUM_ACHIEVEMENT_FEATURES</span><span class="p">,</span>
+    <span class="n">NUM_INVENTORY_FEATURES</span><span class="p">,</span>
+    <span class="n">NUM_VITAL_FEATURES</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseFeatureExtractor"><a class="viewcode-back" href="../../api/oak.features.html#oak.BaseFeatureExtractor">[docs]</a><span class="k">class</span> <span class="nc">BaseFeatureExtractor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for feature extractors.</span>
+
+<span class="sd">    This allows for different feature extraction strategies:</span>
+<span class="sd">    - Privileged info dict features (implemented)</span>
+<span class="sd">    - Pixel-based learned features (future work)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseFeatureExtractor.extract"><a class="viewcode-back" href="../../api/oak.features.html#oak.BaseFeatureExtractor.extract">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract feature vector from observation and info.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs: Raw observation array (64, 64, 3) RGB image.</span>
+<span class="sd">            info: Info dictionary from Crafter environment.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Feature vector x(s) as numpy array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseFeatureExtractor.get_feature_dim"><a class="viewcode-back" href="../../api/oak.features.html#oak.BaseFeatureExtractor.get_feature_dim">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_feature_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dimension of the feature vector.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="FeatureExtractor"><a class="viewcode-back" href="../../api/oak.features.html#oak.FeatureExtractor">[docs]</a><span class="k">class</span> <span class="nc">FeatureExtractor</span><span class="p">(</span><span class="n">BaseFeatureExtractor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Feature extractor using privileged info dictionary.</span>
+
+<span class="sd">    Extracts features directly from Crafter&#39;s info dict, which provides</span>
+<span class="sd">    ground-truth inventory counts and achievement states.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        feature_dim: Total dimension of feature vector (40).</span>
+<span class="sd">        achievement_indices: Mapping from achievement name to feature index.</span>
+<span class="sd">        inventory_indices: Mapping from inventory item to feature index.</span>
+<span class="sd">        vital_indices: Mapping from vital stat to feature index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the feature extractor with index mappings.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_dim</span> <span class="o">=</span> <span class="n">TOTAL_FEATURE_DIM</span>
+
+        <span class="c1"># Build index mappings for each feature group</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Achievement features (0-21)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">achievement_indices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ACHIEVEMENTS</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">NUM_ACHIEVEMENT_FEATURES</span>
+
+        <span class="c1"># Inventory features (22-33)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inventory_indices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">INVENTORY_ITEMS</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">NUM_INVENTORY_FEATURES</span>
+
+        <span class="c1"># Vital features (34-37)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vital_indices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">VITAL_STATS</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="n">NUM_VITAL_FEATURES</span>
+
+        <span class="c1"># Placed object features (38-39)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_placed_index</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">furnace_placed_index</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="FeatureExtractor.extract"><a class="viewcode-back" href="../../api/oak.features.html#oak.FeatureExtractor.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract feature vector from Crafter info dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs: Raw observation (unused in privileged mode).</span>
+<span class="sd">            info: Info dictionary containing &#39;inventory&#39; and &#39;achievements&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Feature vector of shape (40,) with:</span>
+<span class="sd">                - Binary achievement flags (0 or 1)</span>
+<span class="sd">                - Normalized inventory counts (0 to 1)</span>
+<span class="sd">                - Normalized vital levels (0 to 1)</span>
+<span class="sd">                - Binary placed object flags (0 or 1)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_dim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">achievements</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;achievements&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="c1"># Extract achievement features (binary: unlocked in this episode)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">achievement_indices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Achievement is unlocked if count &gt; 0</span>
+            <span class="n">features</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">achievements</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Extract inventory features (normalized to [0, 1])</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inventory_indices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">features</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span> <span class="o">/</span> <span class="n">MAX_INVENTORY_VALUE</span>
+
+        <span class="c1"># Extract vital features (normalized to [0, 1])</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vital_indices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">MAX_VITAL_VALUE</span><span class="p">)</span>
+            <span class="n">features</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">level</span> <span class="o">/</span> <span class="n">MAX_VITAL_VALUE</span>
+
+        <span class="c1"># Extract placed object features</span>
+        <span class="c1"># These are inferred from semantic grid if available,</span>
+        <span class="c1"># otherwise we track them based on achievement history</span>
+        <span class="c1"># For now, use achievements as proxy</span>
+        <span class="n">features</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">table_placed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="k">if</span> <span class="n">achievements</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;place_table&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="p">)</span>
+        <span class="n">features</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">furnace_placed_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="k">if</span> <span class="n">achievements</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;place_furnace&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">features</span></div>
+
+<div class="viewcode-block" id="FeatureExtractor.get_feature_dim"><a class="viewcode-back" href="../../api/oak.features.html#oak.FeatureExtractor.get_feature_dim">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dimension of the feature vector.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_dim</span></div>
+
+<div class="viewcode-block" id="FeatureExtractor.get_feature_index"><a class="viewcode-back" href="../../api/oak.features.html#oak.FeatureExtractor.get_feature_index">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the index of a named feature in the feature vector.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feature_name: Name of the feature (achievement, inventory item, or vital).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Index in the feature vector, or None if not found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">achievement_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">achievement_indices</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inventory_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inventory_indices</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vital_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vital_indices</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">feature_name</span> <span class="o">==</span> <span class="s2">&quot;table_placed&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_placed_index</span>
+        <span class="k">if</span> <span class="n">feature_name</span> <span class="o">==</span> <span class="s2">&quot;furnace_placed&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">furnace_placed_index</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="FeatureExtractor.get_achievement_features"><a class="viewcode-back" href="../../api/oak.features.html#oak.FeatureExtractor.get_achievement_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_achievement_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract only the achievement portion of the feature vector.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">features</span><span class="p">[:</span><span class="n">NUM_ACHIEVEMENT_FEATURES</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FeatureExtractor.get_inventory_features"><a class="viewcode-back" href="../../api/oak.features.html#oak.FeatureExtractor.get_inventory_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_inventory_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract only the inventory portion of the feature vector.&quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">NUM_ACHIEVEMENT_FEATURES</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">NUM_INVENTORY_FEATURES</span>
+        <span class="k">return</span> <span class="n">features</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FeatureExtractor.get_vital_features"><a class="viewcode-back" href="../../api/oak.features.html#oak.FeatureExtractor.get_vital_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_vital_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract only the vital stats portion of the feature vector.&quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">NUM_ACHIEVEMENT_FEATURES</span> <span class="o">+</span> <span class="n">NUM_INVENTORY_FEATURES</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">NUM_VITAL_FEATURES</span>
+        <span class="k">return</span> <span class="n">features</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="PixelFeatureExtractor"><a class="viewcode-back" href="../../api/oak.features.html#oak.PixelFeatureExtractor">[docs]</a><span class="k">class</span> <span class="nc">PixelFeatureExtractor</span><span class="p">(</span><span class="n">BaseFeatureExtractor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pixel-based feature extractor using learned representations.</span>
+
+<span class="sd">    This class is a placeholder for future implementation using CNNs</span>
+<span class="sd">    or other learned encoders to extract features from raw pixel observations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize with optional pre-trained encoder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            encoder: Neural network encoder (e.g., CNN, VAE).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_dim</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># Default latent dimension</span>
+
+<div class="viewcode-block" id="PixelFeatureExtractor.extract"><a class="viewcode-back" href="../../api/oak.features.html#oak.PixelFeatureExtractor.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract features from pixel observations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs: RGB image observation of shape (64, 64, 3).</span>
+<span class="sd">            info: Info dictionary (unused in pixel mode).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Learned feature representation.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: Pixel-based extraction not yet implemented.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Pixel-based feature extraction requires a trained encoder. &quot;</span>
+            <span class="s2">&quot;This is planned for future implementation. &quot;</span>
+            <span class="s2">&quot;Use FeatureExtractor with privileged info dict instead.&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PixelFeatureExtractor.get_feature_dim"><a class="viewcode-back" href="../../api/oak.features.html#oak.PixelFeatureExtractor.get_feature_dim">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dimension of the learned feature vector.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feature_dim</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

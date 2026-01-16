@@ -21,7 +21,11 @@ setuptools.setup(
         "tqdm",
         "gymnasium",
     ],
-    extras_require={"gui": ["pygame"], "rl": ["stable_baselines3"]},
+    extras_require={
+        "gui": ["pygame"],
+        "rl": ["stable_baselines3"],
+        "docs": ["sphinx", "sphinx_rtd_theme", "sphinx-markdown-parser"],
+    },
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",

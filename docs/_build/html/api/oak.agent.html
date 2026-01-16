@@ -1,0 +1,442 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.agent &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oak.features" href="oak.features.html" />
+    <link rel="prev" title="oak Package" href="oak.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.html">oak Package</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oak.agent</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#oak.agent.AgentState"><code class="docutils literal notranslate"><span class="pre">AgentState</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.AgentState.step_count"><code class="docutils literal notranslate"><span class="pre">AgentState.step_count</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.AgentState.completed_achievements"><code class="docutils literal notranslate"><span class="pre">AgentState.completed_achievements</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.AgentState.current_features"><code class="docutils literal notranslate"><span class="pre">AgentState.current_features</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.AgentState.previous_features"><code class="docutils literal notranslate"><span class="pre">AgentState.previous_features</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.AgentState.previous_info"><code class="docutils literal notranslate"><span class="pre">AgentState.previous_info</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">AgentState.step_count</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">AgentState.completed_achievements</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">AgentState.current_features</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">AgentState.previous_features</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">AgentState.previous_info</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.agent.OaKAgent"><code class="docutils literal notranslate"><span class="pre">OaKAgent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.feature_extractor"><code class="docutils literal notranslate"><span class="pre">OaKAgent.feature_extractor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.tech_tree"><code class="docutils literal notranslate"><span class="pre">OaKAgent.tech_tree</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.option_manager"><code class="docutils literal notranslate"><span class="pre">OaKAgent.option_manager</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.interrupt_manager"><code class="docutils literal notranslate"><span class="pre">OaKAgent.interrupt_manager</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.gvfs"><code class="docutils literal notranslate"><span class="pre">OaKAgent.gvfs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.state"><code class="docutils literal notranslate"><span class="pre">OaKAgent.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.reset"><code class="docutils literal notranslate"><span class="pre">OaKAgent.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.act"><code class="docutils literal notranslate"><span class="pre">OaKAgent.act()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.update"><code class="docutils literal notranslate"><span class="pre">OaKAgent.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.select_optimistic_weights"><code class="docutils literal notranslate"><span class="pre">OaKAgent.select_optimistic_weights()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.rank_features"><code class="docutils literal notranslate"><span class="pre">OaKAgent.rank_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.off_policy_correction"><code class="docutils literal notranslate"><span class="pre">OaKAgent.off_policy_correction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.get_state"><code class="docutils literal notranslate"><span class="pre">OaKAgent.get_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.agent.OaKAgent.get_stats"><code class="docutils literal notranslate"><span class="pre">OaKAgent.get_stats()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="oak.html">oak Package</a></li>
+      <li class="breadcrumb-item active">oak.agent</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oak.agent.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-oak.agent">
+<span id="oak-agent"></span><h1>oak.agent<a class="headerlink" href="#module-oak.agent" title="Permalink to this heading"></a></h1>
+<p>OaK Agent - Main agent class for the Options and Knowledge framework.</p>
+<p>This module provides the OaKAgent class, which integrates all OaK components
+to create an agent compatible with the Crafter environment’s Gymnasium API.</p>
+<dl>
+<dt>The agent uses:</dt><dd><ul class="simple">
+<li><p>Feature extraction from privileged info dict</p></li>
+<li><p>Technology tree for subtask ordering</p></li>
+<li><p>GVFs for reward-respecting value estimation</p></li>
+<li><p>Options for temporally extended actions</p></li>
+<li><p>Interrupt manager for survival priorities</p></li>
+</ul>
+</dd>
+<dt>Usage:</dt><dd><p>from oak import OaKAgent
+import crafter</p>
+<p>env = crafter.Env()
+agent = OaKAgent()</p>
+<p>obs, info = env.reset()
+agent.reset()</p>
+<dl class="simple">
+<dt>while not done:</dt><dd><p>action = agent.act(obs, info)
+obs, reward, terminated, truncated, info = env.step(action)
+agent.update(obs, action, reward, info, terminated or truncated)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.agent.AgentState" title="oak.agent.AgentState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AgentState</span></code></a>([step_count, ...])</p></td>
+<td><p>Internal state of the OaK agent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.agent.OaKAgent" title="oak.agent.OaKAgent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OaKAgent</span></code></a>([use_privileged_features, ...])</p></td>
+<td><p>OaK (Options and Knowledge) Agent for Crafter.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.agent.AgentState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.agent.</span></span><span class="sig-name descname"><span class="pre">AgentState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completed_achievements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.14)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/agent.html#AgentState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.AgentState" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Internal state of the OaK agent.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.AgentState.step_count">
+<span class="sig-name descname"><span class="pre">step_count</span></span><a class="headerlink" href="#oak.agent.AgentState.step_count" title="Permalink to this definition"></a></dt>
+<dd><p>Total steps taken in current episode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.AgentState.completed_achievements">
+<span class="sig-name descname"><span class="pre">completed_achievements</span></span><a class="headerlink" href="#oak.agent.AgentState.completed_achievements" title="Permalink to this definition"></a></dt>
+<dd><p>Set of completed achievement names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.AgentState.current_features">
+<span class="sig-name descname"><span class="pre">current_features</span></span><a class="headerlink" href="#oak.agent.AgentState.current_features" title="Permalink to this definition"></a></dt>
+<dd><p>Most recent feature vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.AgentState.previous_features">
+<span class="sig-name descname"><span class="pre">previous_features</span></span><a class="headerlink" href="#oak.agent.AgentState.previous_features" title="Permalink to this definition"></a></dt>
+<dd><p>Previous feature vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)">numpy.ndarray</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.AgentState.previous_info">
+<span class="sig-name descname"><span class="pre">previous_info</span></span><a class="headerlink" href="#oak.agent.AgentState.previous_info" title="Permalink to this definition"></a></dt>
+<dd><p>Previous info dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, Any] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">step_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">completed_achievements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.14)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">current_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">previous_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">previous_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.agent.</span></span><span class="sig-name descname"><span class="pre">OaKAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_privileged_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_interrupts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.99</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>OaK (Options and Knowledge) Agent for Crafter.</p>
+<p>Implements the OaK architecture with reward-respecting subtasks
+of feature attainment, using the Crafter environment as testbed.</p>
+<p>The agent balances:
+1. Technology tree progression (collecting resources, crafting tools)
+2. Survival maintenance (food, water, rest, combat)</p>
+<p>Using priority-based interrupt system and temporally extended options.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.feature_extractor">
+<span class="sig-name descname"><span class="pre">feature_extractor</span></span><a class="headerlink" href="#oak.agent.OaKAgent.feature_extractor" title="Permalink to this definition"></a></dt>
+<dd><p>Converts observations to feature vectors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.tech_tree">
+<span class="sig-name descname"><span class="pre">tech_tree</span></span><a class="headerlink" href="#oak.agent.OaKAgent.tech_tree" title="Permalink to this definition"></a></dt>
+<dd><p>Manages achievement dependencies.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.option_manager">
+<span class="sig-name descname"><span class="pre">option_manager</span></span><a class="headerlink" href="#oak.agent.OaKAgent.option_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Handles option selection and execution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.interrupt_manager">
+<span class="sig-name descname"><span class="pre">interrupt_manager</span></span><a class="headerlink" href="#oak.agent.OaKAgent.interrupt_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Manages survival interrupts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.gvfs">
+<span class="sig-name descname"><span class="pre">gvfs</span></span><a class="headerlink" href="#oak.agent.OaKAgent.gvfs" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of GVFs for each achievement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.state">
+<span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#oak.agent.OaKAgent.state" title="Permalink to this definition"></a></dt>
+<dd><p>Current agent state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset the agent for a new episode.</p>
+<p>Should be called when environment is reset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.act">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.act" title="Permalink to this definition"></a></dt>
+<dd><p>Select an action given current observation and info.</p>
+<p>Implements the priority-based action selection:
+1. Check for survival interrupts (highest priority)
+2. Continue active option if present
+3. Select new option from available subtasks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – Current observation (64, 64, 3) RGB image.</p></li>
+<li><p><strong>info</strong> – Info dictionary from environment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Action index (0-16).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update agent after taking an action.</p>
+<p>Used for learning from experience.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – Observation after action.</p></li>
+<li><p><strong>action</strong> – Action taken.</p></li>
+<li><p><strong>reward</strong> – Reward received.</p></li>
+<li><p><strong>info</strong> – Info dictionary after action.</p></li>
+<li><p><strong>done</strong> – Whether episode ended.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.select_optimistic_weights">
+<span class="sig-name descname"><span class="pre">select_optimistic_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.select_optimistic_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.select_optimistic_weights" title="Permalink to this definition"></a></dt>
+<dd><p>Set optimistic bonus weights for all GVFs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – Method for selecting weights (“uniform”, “adaptive”).</p></li>
+<li><p><strong>value</strong> – Weight value for uniform method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Adaptive weight selection not implemented.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.rank_features">
+<span class="sig-name descname"><span class="pre">rank_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'value_contribution'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.rank_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.rank_features" title="Permalink to this definition"></a></dt>
+<dd><p>Rank features by their contribution to value function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> – Ranking method to use.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of (feature_name, score) tuples, sorted by score.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Feature ranking not implemented.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.off_policy_correction">
+<span class="sig-name descname"><span class="pre">off_policy_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">behavioral_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.off_policy_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.off_policy_correction" title="Permalink to this definition"></a></dt>
+<dd><p>Compute importance sampling ratio for off-policy correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>behavioral_policy</strong> – The policy that generated the data.</p></li>
+<li><p><strong>target_policy</strong> – The policy being learned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Importance sampling ratio.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Off-policy correction not implemented.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.agent.AgentState" title="oak.agent.AgentState"><span class="pre">AgentState</span></a></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Get current agent state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.agent.OaKAgent.get_stats">
+<span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/agent.html#OaKAgent.get_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.agent.OaKAgent.get_stats" title="Permalink to this definition"></a></dt>
+<dd><p>Get agent statistics for logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of agent statistics.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oak.html" class="btn btn-neutral float-left" title="oak Package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oak.features.html" class="btn btn-neutral float-right" title="oak.features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,601 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.options &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.html">oak Package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">oak.options</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oak.options</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Options and Option Management for the OaK framework.</span>
+
+<span class="sd">This module implements temporally extended options as defined in the</span>
+<span class="sd">options framework. Each option consists of:</span>
+<span class="sd">    - Initiation set: States where the option can start</span>
+<span class="sd">    - Policy: Behavior while option is active</span>
+<span class="sd">    - Termination condition: When the option completes (β(s) = 1)</span>
+
+<span class="sd">Options in OaK are derived from reward-respecting GVFs and execute</span>
+<span class="sd">until their termination condition is satisfied.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">oak.constants</span> <span class="kn">import</span> <span class="n">ACTIONS</span><span class="p">,</span> <span class="n">ACTION_TO_INDEX</span><span class="p">,</span> <span class="n">NUM_ACTIONS</span>
+<span class="kn">from</span> <span class="nn">oak.gvf</span> <span class="kn">import</span> <span class="n">GeneralValueFunction</span>
+<span class="kn">from</span> <span class="nn">oak.subtasks</span> <span class="kn">import</span> <span class="n">Subtask</span><span class="p">,</span> <span class="n">SubtaskDefinition</span><span class="p">,</span> <span class="n">SUBTASK_DEFINITIONS</span>
+
+
+<div class="viewcode-block" id="OptionState"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionState">[docs]</a><span class="k">class</span> <span class="nc">OptionState</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;State of an option&#39;s execution.&quot;&quot;&quot;</span>
+
+    <span class="n">INACTIVE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Option not currently executing</span>
+    <span class="n">ACTIVE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Option is executing</span>
+    <span class="n">TERMINATED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># Option just completed</span></div>
+
+
+<div class="viewcode-block" id="OptionResult"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionResult">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OptionResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Result of an option step.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        action: The primitive action to execute.</span>
+<span class="sd">        terminated: Whether the option terminated this step.</span>
+<span class="sd">        info: Additional information about the step.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">action</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">terminated</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Option"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option">[docs]</a><span class="k">class</span> <span class="nc">Option</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for temporally extended options.</span>
+
+<span class="sd">    An option encapsulates a policy that executes over multiple timesteps</span>
+<span class="sd">    until a termination condition is met.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Identifier for this option.</span>
+<span class="sd">        subtask: Associated subtask definition.</span>
+<span class="sd">        gvf: General Value Function for this option.</span>
+<span class="sd">        state: Current execution state.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">subtask</span><span class="p">:</span> <span class="n">Subtask</span><span class="p">,</span>
+        <span class="n">gvf</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GeneralValueFunction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name identifier (typically achievement name).</span>
+<span class="sd">            subtask: Associated Subtask instance.</span>
+<span class="sd">            gvf: Optional GVF for value estimation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtask</span> <span class="o">=</span> <span class="n">subtask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gvf</span> <span class="o">=</span> <span class="n">gvf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">OptionState</span><span class="o">.</span><span class="n">INACTIVE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Option.can_initiate"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.can_initiate">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">can_initiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this option can be initiated in the current state.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary from environment.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if option can start (state is in initiation set).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Option.select_action"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.select_action">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select a primitive action according to the option&#39;s policy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs: Current observation.</span>
+<span class="sd">            info: Current info dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Action index (0-16).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Option.initiate"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.initiate">[docs]</a>    <span class="k">def</span> <span class="nf">initiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start executing this option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">OptionState</span><span class="o">.</span><span class="n">ACTIVE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_info</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Option.step"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptionResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute one step of the option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs: Current observation.</span>
+<span class="sd">            info: Current info dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OptionResult containing action and termination status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">OptionState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Option </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not active&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check termination condition β(s)</span>
+        <span class="n">terminated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtask</span><span class="o">.</span><span class="n">check_termination</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_info</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">terminated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">OptionState</span><span class="o">.</span><span class="n">TERMINATED</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># noop on termination</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_action</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_info</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">OptionResult</span><span class="p">(</span>
+            <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span>
+            <span class="n">terminated</span><span class="o">=</span><span class="n">terminated</span><span class="p">,</span>
+            <span class="n">info</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;option&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Option.terminate"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Force termination of the option.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">OptionState</span><span class="o">.</span><span class="n">TERMINATED</span></div>
+
+<div class="viewcode-block" id="Option.reset"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset option to inactive state.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">OptionState</span><span class="o">.</span><span class="n">INACTIVE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_info</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Option.is_active"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.is_active">[docs]</a>    <span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if option is currently executing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">OptionState</span><span class="o">.</span><span class="n">ACTIVE</span></div>
+
+<div class="viewcode-block" id="Option.get_priority"><a class="viewcode-back" href="../../api/oak.options.html#oak.Option.get_priority">[docs]</a>    <span class="k">def</span> <span class="nf">get_priority</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get priority level from subtask definition.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtask</span><span class="o">.</span><span class="n">get_priority</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RandomOption"><a class="viewcode-back" href="../../api/oak.options.html#oak.RandomOption">[docs]</a><span class="k">class</span> <span class="nc">RandomOption</span><span class="p">(</span><span class="n">Option</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Option with random action selection (placeholder policy).</span>
+
+<span class="sd">    Used as a baseline before learned policies are available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RandomOption.can_initiate"><a class="viewcode-back" href="../../api/oak.options.html#oak.RandomOption.can_initiate">[docs]</a>    <span class="k">def</span> <span class="nf">can_initiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Random option can always initiate if subtask not completed.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtask</span><span class="o">.</span><span class="n">is_completed</span><span class="p">(</span><span class="n">info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RandomOption.select_action"><a class="viewcode-back" href="../../api/oak.options.html#oak.RandomOption.select_action">[docs]</a>    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select a random valid action.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">NUM_ACTIONS</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="HeuristicOption"><a class="viewcode-back" href="../../api/oak.options.html#oak.HeuristicOption">[docs]</a><span class="k">class</span> <span class="nc">HeuristicOption</span><span class="p">(</span><span class="n">Option</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Option with heuristic action selection.</span>
+
+<span class="sd">    Provides hand-coded policies for specific subtasks.</span>
+<span class="sd">    This is a placeholder until learned policies are available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">subtask</span><span class="p">:</span> <span class="n">Subtask</span><span class="p">,</span>
+        <span class="n">gvf</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GeneralValueFunction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">action_sequence</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize heuristic option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Option name.</span>
+<span class="sd">            subtask: Associated subtask.</span>
+<span class="sd">            gvf: Optional GVF.</span>
+<span class="sd">            action_sequence: Optional sequence of actions to execute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">subtask</span><span class="p">,</span> <span class="n">gvf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_sequence</span> <span class="o">=</span> <span class="n">action_sequence</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="HeuristicOption.can_initiate"><a class="viewcode-back" href="../../api/oak.options.html#oak.HeuristicOption.can_initiate">[docs]</a>    <span class="k">def</span> <span class="nf">can_initiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if prerequisites are met and subtask not completed.&quot;&quot;&quot;</span>
+        <span class="c1"># For now, just check if not already completed</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtask</span><span class="o">.</span><span class="n">is_completed</span><span class="p">(</span><span class="n">info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HeuristicOption.select_action"><a class="viewcode-back" href="../../api/oak.options.html#oak.HeuristicOption.select_action">[docs]</a>    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select action from heuristic sequence or random fallback.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_sequence</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">action_sequence</span><span class="p">):</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_sequence</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">action</span>
+
+        <span class="c1"># Random exploration when sequence exhausted</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">NUM_ACTIONS</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HeuristicOption.reset"><a class="viewcode-back" href="../../api/oak.options.html#oak.HeuristicOption.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset option and step counter.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span> <span class="o">=</span> <span class="mi">0</span></div></div>
+
+
+<div class="viewcode-block" id="LearnedOption"><a class="viewcode-back" href="../../api/oak.options.html#oak.LearnedOption">[docs]</a><span class="k">class</span> <span class="nc">LearnedOption</span><span class="p">(</span><span class="n">Option</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Option with learned policy from GVF.</span>
+
+<span class="sd">    Uses the GVF&#39;s value function to select actions that</span>
+<span class="sd">    maximize expected return while respecting rewards.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LearnedOption.can_initiate"><a class="viewcode-back" href="../../api/oak.options.html#oak.LearnedOption.can_initiate">[docs]</a>    <span class="k">def</span> <span class="nf">can_initiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if option can start based on prerequisites.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtask</span><span class="o">.</span><span class="n">is_completed</span><span class="p">(</span><span class="n">info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LearnedOption.select_action"><a class="viewcode-back" href="../../api/oak.options.html#oak.LearnedOption.select_action">[docs]</a>    <span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select action using learned policy.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: Learned policy not yet implemented.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Learned option policy not implemented. &quot;</span>
+            <span class="s2">&quot;Requires trained GVF and action-value function. &quot;</span>
+            <span class="s2">&quot;Use RandomOption or HeuristicOption instead.&quot;</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="OptionManager"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager">[docs]</a><span class="k">class</span> <span class="nc">OptionManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages option selection and execution.</span>
+
+<span class="sd">    Handles:</span>
+<span class="sd">    - Tracking active option</span>
+<span class="sd">    - Option switching and preemption</span>
+<span class="sd">    - Coordinating option execution</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        options: Dictionary of available options.</span>
+<span class="sd">        active_option: Currently executing option (if any).</span>
+<span class="sd">        completed_options: Set of completed option names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the option manager.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Option</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Option</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">completed_options</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="OptionManager.register_option"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.register_option">[docs]</a>    <span class="k">def</span> <span class="nf">register_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span> <span class="n">Option</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register an option with the manager.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            option: Option instance to register.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">option</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">option</span></div>
+
+<div class="viewcode-block" id="OptionManager.register_all"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.register_all">[docs]</a>    <span class="k">def</span> <span class="nf">register_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Option</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register multiple options.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            options: List of Option instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_option</span><span class="p">(</span><span class="n">option</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptionManager.get_option"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.get_option">[docs]</a>    <span class="k">def</span> <span class="nf">get_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Option</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an option by name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptionManager.has_active_option"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.has_active_option">[docs]</a>    <span class="k">def</span> <span class="nf">has_active_option</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if there is an active option.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span><span class="o">.</span><span class="n">is_active</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="OptionManager.set_active"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.set_active">[docs]</a>    <span class="k">def</span> <span class="nf">set_active</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">option</span><span class="p">:</span> <span class="n">Option</span><span class="p">,</span>
+        <span class="n">preempt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the active option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            option: Option to activate.</span>
+<span class="sd">            preempt: If True, terminate current option before switching.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span><span class="o">.</span><span class="n">is_active</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">preempt</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="c1"># Don&#39;t switch if active and not preempting</span>
+
+        <span class="n">option</span><span class="o">.</span><span class="n">initiate</span><span class="p">({})</span>  <span class="c1"># Will be updated with real info on step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span> <span class="o">=</span> <span class="n">option</span></div>
+
+<div class="viewcode-block" id="OptionManager.clear_active"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.clear_active">[docs]</a>    <span class="k">def</span> <span class="nf">clear_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the active option.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="OptionManager.step"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptionResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute one step of the active option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs: Current observation.</span>
+<span class="sd">            info: Current info dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OptionResult from active option.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If no active option.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No active option to step&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_option</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">terminated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">completed_options</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_option</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_active</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="OptionManager.get_available_options"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.get_available_options">[docs]</a>    <span class="k">def</span> <span class="nf">get_available_options</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">exclude_completed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Option</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get options that can be initiated in current state.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary.</span>
+<span class="sd">            exclude_completed: Whether to exclude completed options.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of available options, sorted by priority.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">exclude_completed</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">completed_options</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">can_initiate</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+                <span class="n">available</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+
+        <span class="c1"># Sort by priority (descending)</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">available</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">o</span><span class="o">.</span><span class="n">get_priority</span><span class="p">(),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptionManager.select_next_option"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.select_next_option">[docs]</a>    <span class="k">def</span> <span class="nf">select_next_option</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">available</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Option</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Option</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select the next option to execute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary.</span>
+<span class="sd">            available: Optional pre-filtered list of available options.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Selected option or None if no options available.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Current implementation uses priority-based selection.</span>
+<span class="sd">            Feature-based ranking is not yet implemented.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">available</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_available_options</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">available</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Select highest priority option</span>
+        <span class="c1"># TODO: Implement feature ranking (see STRATEGY.md Unresolved Issues #2)</span>
+        <span class="k">return</span> <span class="n">available</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="OptionManager.compose_options"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.compose_options">[docs]</a>    <span class="k">def</span> <span class="nf">compose_options</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">low_level_options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Option</span><span class="p">],</span>
+        <span class="n">target_achievement</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Option</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compose low-level options into a higher-level option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            low_level_options: Constituent options.</span>
+<span class="sd">            target_achievement: Target achievement for composed option.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Composed option.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: Option composition not implemented.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Option composition not implemented. &quot;</span>
+            <span class="s2">&quot;Requires STOMP hierarchy specification. &quot;</span>
+            <span class="s2">&quot;See STRATEGY.md &#39;Unresolved Issues&#39; section 3.&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptionManager.reset"><a class="viewcode-back" href="../../api/oak.options.html#oak.OptionManager.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the option manager for new episode.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_active</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">completed_options</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">option</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="create_options_for_subtasks"><a class="viewcode-back" href="../../api/oak.options.html#oak.create_options_for_subtasks">[docs]</a><span class="k">def</span> <span class="nf">create_options_for_subtasks</span><span class="p">(</span>
+    <span class="n">subtasks</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Subtask</span><span class="p">],</span>
+    <span class="n">gvfs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GeneralValueFunction</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">option_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Option</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create options for all subtasks.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        subtasks: Dictionary of Subtask instances.</span>
+<span class="sd">        gvfs: Optional dictionary of GVF instances.</span>
+<span class="sd">        option_type: Type of option to create (&quot;random&quot;, &quot;heuristic&quot;, &quot;learned&quot;).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary mapping subtask names to Option instances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">subtask</span> <span class="ow">in</span> <span class="n">subtasks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">gvf</span> <span class="o">=</span> <span class="n">gvfs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">gvfs</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">option_type</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="n">RandomOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">subtask</span><span class="p">,</span> <span class="n">gvf</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">option_type</span> <span class="o">==</span> <span class="s2">&quot;heuristic&quot;</span><span class="p">:</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="n">HeuristicOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">subtask</span><span class="p">,</span> <span class="n">gvf</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">option_type</span> <span class="o">==</span> <span class="s2">&quot;learned&quot;</span><span class="p">:</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="n">LearnedOption</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">subtask</span><span class="p">,</span> <span class="n">gvf</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown option type: </span><span class="si">{</span><span class="n">option_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">options</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">option</span>
+
+    <span class="k">return</span> <span class="n">options</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,433 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.interrupts &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.html">oak Package</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">oak.interrupts</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oak.interrupts</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interrupt Manager for survival options.</span>
+
+<span class="sd">This module implements a priority-based interrupt system that monitors</span>
+<span class="sd">vital statistics (health, food, water, rest) and triggers survival</span>
+<span class="sd">options when they fall below critical thresholds.</span>
+
+<span class="sd">The interrupt system can preempt ongoing progression options to ensure</span>
+<span class="sd">agent survival, implementing the survival-vs-progression tradeoff</span>
+<span class="sd">described in STRATEGY.md.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">oak.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CRITICAL_VITAL_THRESHOLD</span><span class="p">,</span>
+    <span class="n">WARNING_VITAL_THRESHOLD</span><span class="p">,</span>
+    <span class="n">MAX_VITAL_VALUE</span><span class="p">,</span>
+    <span class="n">SurvivalPriority</span><span class="p">,</span>
+    <span class="n">VITAL_TO_SURVIVAL_ACHIEVEMENT</span><span class="p">,</span>
+    <span class="n">FOOD_ACHIEVEMENTS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">oak.subtasks</span> <span class="kn">import</span> <span class="n">Subtask</span><span class="p">,</span> <span class="n">get_survival_subtasks</span>
+
+
+<div class="viewcode-block" id="VitalStatus"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.VitalStatus">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">VitalStatus</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Current status of a vital statistic.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Vital stat name (health, food, drink, energy).</span>
+<span class="sd">        value: Current value (0-9).</span>
+<span class="sd">        is_critical: Whether below critical threshold.</span>
+<span class="sd">        is_warning: Whether below warning threshold.</span>
+<span class="sd">        priority: Interrupt priority level.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">is_critical</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">is_warning</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span></div>
+
+
+<div class="viewcode-block" id="InterruptRequest"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptRequest">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">InterruptRequest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Request to interrupt current option for survival.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        vital: The vital statistic triggering the interrupt.</span>
+<span class="sd">        survival_option: Name of the survival option to activate.</span>
+<span class="sd">        priority: Priority level of the interrupt.</span>
+<span class="sd">        urgent: Whether this is an urgent (critical) interrupt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vital</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">survival_option</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">urgent</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+<div class="viewcode-block" id="InterruptManager"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager">[docs]</a><span class="k">class</span> <span class="nc">InterruptManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages survival interrupts based on vital statistics.</span>
+
+<span class="sd">    Monitors health, food, water (drink), and energy levels, triggering</span>
+<span class="sd">    appropriate survival options when levels fall below thresholds.</span>
+
+<span class="sd">    Priority ordering (highest to lowest):</span>
+<span class="sd">    1. Health (if being attacked)</span>
+<span class="sd">    2. Food (prevents health loss)</span>
+<span class="sd">    3. Water/Drink (prevents health loss)</span>
+<span class="sd">    4. Energy (prevents health loss)</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        critical_threshold: Level below which urgent interrupt triggers.</span>
+<span class="sd">        warning_threshold: Level below which normal interrupt triggers.</span>
+<span class="sd">        survival_subtasks: Available survival subtask instances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">critical_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">CRITICAL_VITAL_THRESHOLD</span><span class="p">,</span>
+        <span class="n">warning_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">WARNING_VITAL_THRESHOLD</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the interrupt manager.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            critical_threshold: Trigger urgent interrupt below this level.</span>
+<span class="sd">            warning_threshold: Trigger normal interrupt below this level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critical_threshold</span> <span class="o">=</span> <span class="n">critical_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warning_threshold</span> <span class="o">=</span> <span class="n">warning_threshold</span>
+
+        <span class="c1"># Initialize survival subtasks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">survival_subtasks</span> <span class="o">=</span> <span class="n">get_survival_subtasks</span><span class="p">()</span>
+
+        <span class="c1"># Priority mapping for vitals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vital_priorities</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;health&quot;</span><span class="p">:</span> <span class="n">SurvivalPriority</span><span class="o">.</span><span class="n">HEALTH</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;food&quot;</span><span class="p">:</span> <span class="n">SurvivalPriority</span><span class="o">.</span><span class="n">FOOD</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;drink&quot;</span><span class="p">:</span> <span class="n">SurvivalPriority</span><span class="o">.</span><span class="n">DRINK</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">SurvivalPriority</span><span class="o">.</span><span class="n">ENERGY</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Mapping from vital to preferred survival action</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vital_to_action</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;food&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;eat_cow&quot;</span><span class="p">,</span> <span class="s2">&quot;eat_plant&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;drink&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;collect_drink&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;wake_up&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Track previous vital levels for trend detection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_vitals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="InterruptManager.get_vital_status"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager.get_vital_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_vital_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">VitalStatus</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract vital status from info dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Info dictionary from Crafter environment.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary mapping vital names to VitalStatus instances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">statuses</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">vital</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="s2">&quot;food&quot;</span><span class="p">,</span> <span class="s2">&quot;drink&quot;</span><span class="p">,</span> <span class="s2">&quot;energy&quot;</span><span class="p">]:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vital</span><span class="p">,</span> <span class="n">MAX_VITAL_VALUE</span><span class="p">)</span>
+            <span class="n">statuses</span><span class="p">[</span><span class="n">vital</span><span class="p">]</span> <span class="o">=</span> <span class="n">VitalStatus</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">vital</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">is_critical</span><span class="o">=</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_threshold</span><span class="p">,</span>
+                <span class="n">is_warning</span><span class="o">=</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warning_threshold</span><span class="p">,</span>
+                <span class="n">priority</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vital_priorities</span><span class="p">[</span><span class="n">vital</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">statuses</span></div>
+
+<div class="viewcode-block" id="InterruptManager.check_interrupt"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager.check_interrupt">[docs]</a>    <span class="k">def</span> <span class="nf">check_interrupt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">allow_warning</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">InterruptRequest</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a survival interrupt should be triggered.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary from environment.</span>
+<span class="sd">            allow_warning: If True, also trigger on warning (not just critical).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            InterruptRequest if interrupt needed, None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">statuses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_vital_status</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="c1"># Collect all triggering conditions</span>
+        <span class="n">interrupts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">InterruptRequest</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">vital</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">statuses</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Skip health - we can&#39;t directly restore it</span>
+            <span class="k">if</span> <span class="n">vital</span> <span class="o">==</span> <span class="s2">&quot;health&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">should_trigger</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">is_critical</span> <span class="ow">or</span> <span class="p">(</span><span class="n">allow_warning</span> <span class="ow">and</span> <span class="n">status</span><span class="o">.</span><span class="n">is_warning</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">should_trigger</span><span class="p">:</span>
+                <span class="c1"># Get available survival actions for this vital</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vital_to_action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vital</span><span class="p">,</span> <span class="p">[])</span>
+                <span class="k">if</span> <span class="n">actions</span><span class="p">:</span>
+                    <span class="n">interrupts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">InterruptRequest</span><span class="p">(</span>
+                            <span class="n">vital</span><span class="o">=</span><span class="n">vital</span><span class="p">,</span>
+                            <span class="n">survival_option</span><span class="o">=</span><span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># Primary action</span>
+                            <span class="n">priority</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                            <span class="n">urgent</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">is_critical</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">interrupts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Return highest priority interrupt</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">interrupts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InterruptManager.check_combat_interrupt"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager.check_combat_interrupt">[docs]</a>    <span class="k">def</span> <span class="nf">check_combat_interrupt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">previous_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">InterruptRequest</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if combat interrupt is needed (health decreasing from attack).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary.</span>
+<span class="sd">            previous_info: Previous info dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Combat InterruptRequest if under attack, None otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">previous_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">current_health</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="n">MAX_VITAL_VALUE</span><span class="p">)</span>
+        <span class="n">previous_health</span> <span class="o">=</span> <span class="n">previous_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="n">MAX_VITAL_VALUE</span><span class="p">)</span>
+
+        <span class="c1"># Health decreased - likely under attack</span>
+        <span class="k">if</span> <span class="n">current_health</span> <span class="o">&lt;</span> <span class="n">previous_health</span><span class="p">:</span>
+            <span class="c1"># Could be zombie or skeleton - check semantic grid if available</span>
+            <span class="c1"># For now, assume zombie (more common in open areas)</span>
+            <span class="k">return</span> <span class="n">InterruptRequest</span><span class="p">(</span>
+                <span class="n">vital</span><span class="o">=</span><span class="s2">&quot;health&quot;</span><span class="p">,</span>
+                <span class="n">survival_option</span><span class="o">=</span><span class="s2">&quot;defeat_zombie&quot;</span><span class="p">,</span>
+                <span class="n">priority</span><span class="o">=</span><span class="n">SurvivalPriority</span><span class="o">.</span><span class="n">COMBAT</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">urgent</span><span class="o">=</span><span class="n">current_health</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critical_threshold</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="InterruptManager.get_recommended_survival_action"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager.get_recommended_survival_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_recommended_survival_action</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the recommended survival action based on current vitals.</span>
+
+<span class="sd">        Considers which survival options have already been completed</span>
+<span class="sd">        and which vitals are lowest.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Name of recommended survival subtask, or None if all vitals OK.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">interrupt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_interrupt</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">allow_warning</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">interrupt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Check if primary action is available, otherwise try alternatives</span>
+        <span class="n">vital</span> <span class="o">=</span> <span class="n">interrupt</span><span class="o">.</span><span class="n">vital</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vital_to_action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vital</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">subtask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">survival_subtasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">subtask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Could check if action is feasible (e.g., cow nearby)</span>
+                <span class="k">return</span> <span class="n">action</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="InterruptManager.get_vital_trend"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager.get_vital_trend">[docs]</a>    <span class="k">def</span> <span class="nf">get_vital_trend</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get trend (change) in vital levels.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info: Current info dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary mapping vital names to change since last check.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inventory</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">trends</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">vital</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="s2">&quot;food&quot;</span><span class="p">,</span> <span class="s2">&quot;drink&quot;</span><span class="p">,</span> <span class="s2">&quot;energy&quot;</span><span class="p">]:</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vital</span><span class="p">,</span> <span class="n">MAX_VITAL_VALUE</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_vitals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_vitals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vital</span><span class="p">,</span> <span class="n">MAX_VITAL_VALUE</span><span class="p">)</span>
+                <span class="n">trends</span><span class="p">[</span><span class="n">vital</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span> <span class="o">-</span> <span class="n">previous</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">trends</span><span class="p">[</span><span class="n">vital</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Update previous vitals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_vitals</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">vital</span><span class="p">:</span> <span class="n">inventory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vital</span><span class="p">,</span> <span class="n">MAX_VITAL_VALUE</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">vital</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;health&quot;</span><span class="p">,</span> <span class="s2">&quot;food&quot;</span><span class="p">,</span> <span class="s2">&quot;drink&quot;</span><span class="p">,</span> <span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">trends</span></div>
+
+<div class="viewcode-block" id="InterruptManager.reset"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset interrupt manager state for new episode.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_vitals</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="InterruptManager.should_preempt"><a class="viewcode-back" href="../../api/oak.interrupts.html#oak.InterruptManager.should_preempt">[docs]</a>    <span class="k">def</span> <span class="nf">should_preempt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">current_option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">interrupt</span><span class="p">:</span> <span class="n">InterruptRequest</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if interrupt should preempt the current option.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_option: Name of currently active option.</span>
+<span class="sd">            interrupt: The interrupt request.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if interrupt should preempt current option.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Always preempt for urgent (critical) interrupts</span>
+        <span class="k">if</span> <span class="n">interrupt</span><span class="o">.</span><span class="n">urgent</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Don&#39;t preempt if already doing a survival action</span>
+        <span class="k">if</span> <span class="n">current_option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">survival_subtasks</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Preempt for high-priority warnings if current is low priority</span>
+        <span class="c1"># This is a simplified heuristic</span>
+        <span class="k">return</span> <span class="n">interrupt</span><span class="o">.</span><span class="n">priority</span> <span class="o">&gt;=</span> <span class="n">SurvivalPriority</span><span class="o">.</span><span class="n">FOOD</span><span class="o">.</span><span class="n">value</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

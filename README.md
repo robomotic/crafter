@@ -213,6 +213,41 @@ while not done:
 
 [gymnasium]: https://github.com/Farama-Foundation/Gymnasium
 
+## Documentation
+
+API documentation for the OaK (Options and Knowledge) framework is automatically generated using Sphinx.
+
+### Building Documentation
+
+To build the HTML documentation, first install the documentation dependencies:
+
+```sh
+pip install -e ".[docs]"
+```
+
+Then build the documentation:
+
+```sh
+cd docs
+make html
+```
+
+The generated HTML documentation will be available in `docs/_build/html/index.html`. Open this file in your browser to view the complete API reference, including:
+
+- **OaK Framework Architecture** - Overview of the Options and Knowledge framework
+- **API Reference** - Complete auto-generated documentation for all oak modules
+- **Strategy Guide** - Detailed explanation of the STOMP progression and subtask definitions
+
+### Key Modules
+
+- `oak.agent` - The main OaKAgent class and agent state management
+- `oak.gvf` - General Value Functions for reward-respecting subtasks
+- `oak.options` - Option framework and option managers
+- `oak.subtasks` - Subtask definitions and management
+- `oak.tech_tree` - Technology tree and achievement dependencies
+- `oak.features` - Feature extraction and representation
+- `oak.interrupts` - Interrupt handling and vital status management
+
 ## Evaluation
 
 Agents are allowed a budget of 1M environmnent steps and are evaluated by their

@@ -1,0 +1,684 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.options &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oak.subtasks" href="oak.subtasks.html" />
+    <link rel="prev" title="oak.interrupts" href="oak.interrupts.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.html">oak Package</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oak.options</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.OptionState"><code class="docutils literal notranslate"><span class="pre">OptionState</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionState.INACTIVE"><code class="docutils literal notranslate"><span class="pre">OptionState.INACTIVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionState.ACTIVE"><code class="docutils literal notranslate"><span class="pre">OptionState.ACTIVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionState.TERMINATED"><code class="docutils literal notranslate"><span class="pre">OptionState.TERMINATED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.OptionResult"><code class="docutils literal notranslate"><span class="pre">OptionResult</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionResult.action"><code class="docutils literal notranslate"><span class="pre">OptionResult.action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionResult.terminated"><code class="docutils literal notranslate"><span class="pre">OptionResult.terminated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionResult.info"><code class="docutils literal notranslate"><span class="pre">OptionResult.info</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">OptionResult.action</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">OptionResult.terminated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">OptionResult.info</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.Option"><code class="docutils literal notranslate"><span class="pre">Option</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.name"><code class="docutils literal notranslate"><span class="pre">Option.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.subtask"><code class="docutils literal notranslate"><span class="pre">Option.subtask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.gvf"><code class="docutils literal notranslate"><span class="pre">Option.gvf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.state"><code class="docutils literal notranslate"><span class="pre">Option.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.can_initiate"><code class="docutils literal notranslate"><span class="pre">Option.can_initiate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.select_action"><code class="docutils literal notranslate"><span class="pre">Option.select_action()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.initiate"><code class="docutils literal notranslate"><span class="pre">Option.initiate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.step"><code class="docutils literal notranslate"><span class="pre">Option.step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.terminate"><code class="docutils literal notranslate"><span class="pre">Option.terminate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.reset"><code class="docutils literal notranslate"><span class="pre">Option.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.is_active"><code class="docutils literal notranslate"><span class="pre">Option.is_active()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.Option.get_priority"><code class="docutils literal notranslate"><span class="pre">Option.get_priority()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.RandomOption"><code class="docutils literal notranslate"><span class="pre">RandomOption</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.RandomOption.can_initiate"><code class="docutils literal notranslate"><span class="pre">RandomOption.can_initiate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.RandomOption.select_action"><code class="docutils literal notranslate"><span class="pre">RandomOption.select_action()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.HeuristicOption"><code class="docutils literal notranslate"><span class="pre">HeuristicOption</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.HeuristicOption.can_initiate"><code class="docutils literal notranslate"><span class="pre">HeuristicOption.can_initiate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.HeuristicOption.select_action"><code class="docutils literal notranslate"><span class="pre">HeuristicOption.select_action()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.HeuristicOption.reset"><code class="docutils literal notranslate"><span class="pre">HeuristicOption.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.LearnedOption"><code class="docutils literal notranslate"><span class="pre">LearnedOption</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.LearnedOption.can_initiate"><code class="docutils literal notranslate"><span class="pre">LearnedOption.can_initiate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.LearnedOption.select_action"><code class="docutils literal notranslate"><span class="pre">LearnedOption.select_action()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.OptionManager"><code class="docutils literal notranslate"><span class="pre">OptionManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.options"><code class="docutils literal notranslate"><span class="pre">OptionManager.options</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.active_option"><code class="docutils literal notranslate"><span class="pre">OptionManager.active_option</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.completed_options"><code class="docutils literal notranslate"><span class="pre">OptionManager.completed_options</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.register_option"><code class="docutils literal notranslate"><span class="pre">OptionManager.register_option()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.register_all"><code class="docutils literal notranslate"><span class="pre">OptionManager.register_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.get_option"><code class="docutils literal notranslate"><span class="pre">OptionManager.get_option()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.has_active_option"><code class="docutils literal notranslate"><span class="pre">OptionManager.has_active_option()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.set_active"><code class="docutils literal notranslate"><span class="pre">OptionManager.set_active()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.clear_active"><code class="docutils literal notranslate"><span class="pre">OptionManager.clear_active()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.step"><code class="docutils literal notranslate"><span class="pre">OptionManager.step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.get_available_options"><code class="docutils literal notranslate"><span class="pre">OptionManager.get_available_options()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.select_next_option"><code class="docutils literal notranslate"><span class="pre">OptionManager.select_next_option()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.compose_options"><code class="docutils literal notranslate"><span class="pre">OptionManager.compose_options()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.options.OptionManager.reset"><code class="docutils literal notranslate"><span class="pre">OptionManager.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.options.create_options_for_subtasks"><code class="docutils literal notranslate"><span class="pre">create_options_for_subtasks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.features.html">oak.features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="oak.html">oak Package</a></li>
+      <li class="breadcrumb-item active">oak.options</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oak.options.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-oak.options">
+<span id="oak-options"></span><h1>oak.options<a class="headerlink" href="#module-oak.options" title="Permalink to this heading"></a></h1>
+<p>Options and Option Management for the OaK framework.</p>
+<p>This module implements temporally extended options as defined in the
+options framework. Each option consists of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Initiation set: States where the option can start</p></li>
+<li><p>Policy: Behavior while option is active</p></li>
+<li><p>Termination condition: When the option completes (β(s) = 1)</p></li>
+</ul>
+</div></blockquote>
+<p>Options in OaK are derived from reward-respecting GVFs and execute
+until their termination condition is satisfied.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.options.create_options_for_subtasks" title="oak.options.create_options_for_subtasks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_options_for_subtasks</span></code></a>(subtasks[, ...])</p></td>
+<td><p>Create options for all subtasks.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.options.HeuristicOption" title="oak.options.HeuristicOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HeuristicOption</span></code></a>(name, subtask[, gvf, ...])</p></td>
+<td><p>Option with heuristic action selection.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.options.LearnedOption" title="oak.options.LearnedOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LearnedOption</span></code></a>(name, subtask[, gvf])</p></td>
+<td><p>Option with learned policy from GVF.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Option</span></code></a>(name, subtask[, gvf])</p></td>
+<td><p>Abstract base class for temporally extended options.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.options.OptionManager" title="oak.options.OptionManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionManager</span></code></a>()</p></td>
+<td><p>Manages option selection and execution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.options.OptionResult" title="oak.options.OptionResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionResult</span></code></a>(action, terminated, info)</p></td>
+<td><p>Result of an option step.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.options.OptionState" title="oak.options.OptionState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionState</span></code></a>(value)</p></td>
+<td><p>State of an option's execution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.options.RandomOption" title="oak.options.RandomOption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomOption</span></code></a>(name, subtask[, gvf])</p></td>
+<td><p>Option with random action selection (placeholder policy).</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.options.OptionState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">OptionState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/options.html#OptionState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionState" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>State of an option’s execution.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionState.INACTIVE">
+<span class="sig-name descname"><span class="pre">INACTIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#oak.options.OptionState.INACTIVE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionState.ACTIVE">
+<span class="sig-name descname"><span class="pre">ACTIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#oak.options.OptionState.ACTIVE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionState.TERMINATED">
+<span class="sig-name descname"><span class="pre">TERMINATED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#oak.options.OptionState.TERMINATED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.options.OptionResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">OptionResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/options.html#OptionResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionResult" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Result of an option step.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionResult.action">
+<span class="sig-name descname"><span class="pre">action</span></span><a class="headerlink" href="#oak.options.OptionResult.action" title="Permalink to this definition"></a></dt>
+<dd><p>The primitive action to execute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionResult.terminated">
+<span class="sig-name descname"><span class="pre">terminated</span></span><a class="headerlink" href="#oak.options.OptionResult.terminated" title="Permalink to this definition"></a></dt>
+<dd><p>Whether the option terminated this step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionResult.info">
+<span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#oak.options.OptionResult.info" title="Permalink to this definition"></a></dt>
+<dd><p>Additional information about the step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">action</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">terminated</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.options.Option">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">Option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.subtasks.html#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gvf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.gvf.html#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><span class="pre">GeneralValueFunction</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/options.html#Option"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract base class for temporally extended options.</p>
+<p>An option encapsulates a policy that executes over multiple timesteps
+until a termination condition is met.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.Option.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#oak.options.Option.name" title="Permalink to this definition"></a></dt>
+<dd><p>Identifier for this option.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.Option.subtask">
+<span class="sig-name descname"><span class="pre">subtask</span></span><a class="headerlink" href="#oak.options.Option.subtask" title="Permalink to this definition"></a></dt>
+<dd><p>Associated subtask definition.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.Option.gvf">
+<span class="sig-name descname"><span class="pre">gvf</span></span><a class="headerlink" href="#oak.options.Option.gvf" title="Permalink to this definition"></a></dt>
+<dd><p>General Value Function for this option.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.Option.state">
+<span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#oak.options.Option.state" title="Permalink to this definition"></a></dt>
+<dd><p>Current execution state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.can_initiate">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_initiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.can_initiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.can_initiate" title="Permalink to this definition"></a></dt>
+<dd><p>Check if this option can be initiated in the current state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info</strong> – Current info dictionary from environment.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if option can start (state is in initiation set).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.select_action">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.select_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.select_action" title="Permalink to this definition"></a></dt>
+<dd><p>Select a primitive action according to the option’s policy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – Current observation.</p></li>
+<li><p><strong>info</strong> – Current info dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Action index (0-16).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.initiate">
+<span class="sig-name descname"><span class="pre">initiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.initiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.initiate" title="Permalink to this definition"></a></dt>
+<dd><p>Start executing this option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info</strong> – Current info dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.options.OptionResult" title="oak.options.OptionResult"><span class="pre">OptionResult</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.step" title="Permalink to this definition"></a></dt>
+<dd><p>Execute one step of the option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – Current observation.</p></li>
+<li><p><strong>info</strong> – Current info dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>OptionResult containing action and termination status.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.terminate">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.terminate" title="Permalink to this definition"></a></dt>
+<dd><p>Force termination of the option.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset option to inactive state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.is_active">
+<span class="sig-name descname"><span class="pre">is_active</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.is_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.is_active" title="Permalink to this definition"></a></dt>
+<dd><p>Check if option is currently executing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.Option.get_priority">
+<span class="sig-name descname"><span class="pre">get_priority</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#Option.get_priority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.Option.get_priority" title="Permalink to this definition"></a></dt>
+<dd><p>Get priority level from subtask definition.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.options.RandomOption">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">RandomOption</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.subtasks.html#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gvf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.gvf.html#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><span class="pre">GeneralValueFunction</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/options.html#RandomOption"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.RandomOption" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a></p>
+<p>Option with random action selection (placeholder policy).</p>
+<p>Used as a baseline before learned policies are available.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.RandomOption.can_initiate">
+<span class="sig-name descname"><span class="pre">can_initiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#RandomOption.can_initiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.RandomOption.can_initiate" title="Permalink to this definition"></a></dt>
+<dd><p>Random option can always initiate if subtask not completed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.RandomOption.select_action">
+<span class="sig-name descname"><span class="pre">select_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#RandomOption.select_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.RandomOption.select_action" title="Permalink to this definition"></a></dt>
+<dd><p>Select a random valid action.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.options.HeuristicOption">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">HeuristicOption</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.subtasks.html#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gvf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.gvf.html#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><span class="pre">GeneralValueFunction</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_sequence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/options.html#HeuristicOption"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.HeuristicOption" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a></p>
+<p>Option with heuristic action selection.</p>
+<p>Provides hand-coded policies for specific subtasks.
+This is a placeholder until learned policies are available.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.HeuristicOption.can_initiate">
+<span class="sig-name descname"><span class="pre">can_initiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#HeuristicOption.can_initiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.HeuristicOption.can_initiate" title="Permalink to this definition"></a></dt>
+<dd><p>Check if prerequisites are met and subtask not completed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.HeuristicOption.select_action">
+<span class="sig-name descname"><span class="pre">select_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#HeuristicOption.select_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.HeuristicOption.select_action" title="Permalink to this definition"></a></dt>
+<dd><p>Select action from heuristic sequence or random fallback.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.HeuristicOption.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#HeuristicOption.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.HeuristicOption.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset option and step counter.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.options.LearnedOption">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">LearnedOption</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.subtasks.html#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">gvf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="oak.gvf.html#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><span class="pre">GeneralValueFunction</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/options.html#LearnedOption"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.LearnedOption" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><code class="xref py py-class docutils literal notranslate"><span class="pre">Option</span></code></a></p>
+<p>Option with learned policy from GVF.</p>
+<p>Uses the GVF’s value function to select actions that
+maximize expected return while respecting rewards.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.LearnedOption.can_initiate">
+<span class="sig-name descname"><span class="pre">can_initiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#LearnedOption.can_initiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.LearnedOption.can_initiate" title="Permalink to this definition"></a></dt>
+<dd><p>Check if option can start based on prerequisites.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.LearnedOption.select_action">
+<span class="sig-name descname"><span class="pre">select_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#LearnedOption.select_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.LearnedOption.select_action" title="Permalink to this definition"></a></dt>
+<dd><p>Select action using learned policy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Learned policy not yet implemented.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.options.OptionManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">OptionManager</span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages option selection and execution.</p>
+<p>Handles:
+- Tracking active option
+- Option switching and preemption
+- Coordinating option execution</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionManager.options">
+<span class="sig-name descname"><span class="pre">options</span></span><a class="headerlink" href="#oak.options.OptionManager.options" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of available options.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionManager.active_option">
+<span class="sig-name descname"><span class="pre">active_option</span></span><a class="headerlink" href="#oak.options.OptionManager.active_option" title="Permalink to this definition"></a></dt>
+<dd><p>Currently executing option (if any).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.options.OptionManager.completed_options">
+<span class="sig-name descname"><span class="pre">completed_options</span></span><a class="headerlink" href="#oak.options.OptionManager.completed_options" title="Permalink to this definition"></a></dt>
+<dd><p>Set of completed option names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.register_option">
+<span class="sig-name descname"><span class="pre">register_option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.register_option"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.register_option" title="Permalink to this definition"></a></dt>
+<dd><p>Register an option with the manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>option</strong> – Option instance to register.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.register_all">
+<span class="sig-name descname"><span class="pre">register_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.register_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.register_all" title="Permalink to this definition"></a></dt>
+<dd><p>Register multiple options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>options</strong> – List of Option instances.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.get_option">
+<span class="sig-name descname"><span class="pre">get_option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.get_option"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.get_option" title="Permalink to this definition"></a></dt>
+<dd><p>Get an option by name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.has_active_option">
+<span class="sig-name descname"><span class="pre">has_active_option</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.has_active_option"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.has_active_option" title="Permalink to this definition"></a></dt>
+<dd><p>Check if there is an active option.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.set_active">
+<span class="sig-name descname"><span class="pre">set_active</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">preempt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.set_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.set_active" title="Permalink to this definition"></a></dt>
+<dd><p>Set the active option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option</strong> – Option to activate.</p></li>
+<li><p><strong>preempt</strong> – If True, terminate current option before switching.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.clear_active">
+<span class="sig-name descname"><span class="pre">clear_active</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.clear_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.clear_active" title="Permalink to this definition"></a></dt>
+<dd><p>Clear the active option.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.options.OptionResult" title="oak.options.OptionResult"><span class="pre">OptionResult</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.step" title="Permalink to this definition"></a></dt>
+<dd><p>Execute one step of the active option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – Current observation.</p></li>
+<li><p><strong>info</strong> – Current info dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>OptionResult from active option.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If no active option.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.get_available_options">
+<span class="sig-name descname"><span class="pre">get_available_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_completed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.get_available_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.get_available_options" title="Permalink to this definition"></a></dt>
+<dd><p>Get options that can be initiated in current state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>info</strong> – Current info dictionary.</p></li>
+<li><p><strong>exclude_completed</strong> – Whether to exclude completed options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of available options, sorted by priority.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.select_next_option">
+<span class="sig-name descname"><span class="pre">select_next_option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">available</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.select_next_option"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.select_next_option" title="Permalink to this definition"></a></dt>
+<dd><p>Select the next option to execute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>info</strong> – Current info dictionary.</p></li>
+<li><p><strong>available</strong> – Optional pre-filtered list of available options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Selected option or None if no options available.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Current implementation uses priority-based selection.
+Feature-based ranking is not yet implemented.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.compose_options">
+<span class="sig-name descname"><span class="pre">compose_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low_level_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_achievement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.compose_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.compose_options" title="Permalink to this definition"></a></dt>
+<dd><p>Compose low-level options into a higher-level option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>low_level_options</strong> – Constituent options.</p></li>
+<li><p><strong>target_achievement</strong> – Target achievement for composed option.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Composed option.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Option composition not implemented.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.options.OptionManager.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/options.html#OptionManager.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.OptionManager.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Reset the option manager for new episode.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="oak.options.create_options_for_subtasks">
+<span class="sig-prename descclassname"><span class="pre">oak.options.</span></span><span class="sig-name descname"><span class="pre">create_options_for_subtasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="oak.subtasks.html#oak.subtasks.Subtask" title="oak.subtasks.Subtask"><span class="pre">Subtask</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gvfs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="oak.gvf.html#oak.gvf.GeneralValueFunction" title="oak.gvf.GeneralValueFunction"><span class="pre">GeneralValueFunction</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'random'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#oak.options.Option" title="oak.options.Option"><span class="pre">Option</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/oak/options.html#create_options_for_subtasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.options.create_options_for_subtasks" title="Permalink to this definition"></a></dt>
+<dd><p>Create options for all subtasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subtasks</strong> – Dictionary of Subtask instances.</p></li>
+<li><p><strong>gvfs</strong> – Optional dictionary of GVF instances.</p></li>
+<li><p><strong>option_type</strong> – Type of option to create (“random”, “heuristic”, “learned”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping subtask names to Option instances.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oak.interrupts.html" class="btn btn-neutral float-left" title="oak.interrupts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oak.subtasks.html" class="btn btn-neutral float-right" title="oak.subtasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

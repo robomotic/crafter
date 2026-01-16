@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oak.features &mdash; OaK (Options and Knowledge) Framework 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=359c27e9"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oak.gvf" href="oak.gvf.html" />
+    <link rel="prev" title="oak.agent" href="oak.agent.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OaK (Options and Knowledge) Framework
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../strategy.html">Strategy and Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.html">oak Package</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oak.agent.html">oak.agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.gvf.html">oak.gvf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.options.html">oak.options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.subtasks.html">oak.subtasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oak.tech_tree.html">oak.tech_tree</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oak.features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#oak.features.BaseFeatureExtractor"><code class="docutils literal notranslate"><span class="pre">BaseFeatureExtractor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.BaseFeatureExtractor.extract"><code class="docutils literal notranslate"><span class="pre">BaseFeatureExtractor.extract()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.BaseFeatureExtractor.get_feature_dim"><code class="docutils literal notranslate"><span class="pre">BaseFeatureExtractor.get_feature_dim()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.features.FeatureExtractor"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.feature_dim"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.feature_dim</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.achievement_indices"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.achievement_indices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.inventory_indices"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.inventory_indices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.vital_indices"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.vital_indices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.extract"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.extract()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.get_feature_dim"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.get_feature_dim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.get_feature_index"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.get_feature_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.get_achievement_features"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.get_achievement_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.get_inventory_features"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.get_inventory_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.FeatureExtractor.get_vital_features"><code class="docutils literal notranslate"><span class="pre">FeatureExtractor.get_vital_features()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#oak.features.PixelFeatureExtractor"><code class="docutils literal notranslate"><span class="pre">PixelFeatureExtractor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.PixelFeatureExtractor.extract"><code class="docutils literal notranslate"><span class="pre">PixelFeatureExtractor.extract()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oak.features.PixelFeatureExtractor.get_feature_dim"><code class="docutils literal notranslate"><span class="pre">PixelFeatureExtractor.get_feature_dim()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="oak.interrupts.html">oak.interrupts</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OaK (Options and Knowledge) Framework</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="oak.html">oak Package</a></li>
+      <li class="breadcrumb-item active">oak.features</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oak.features.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-oak.features">
+<span id="oak-features"></span><h1>oak.features<a class="headerlink" href="#module-oak.features" title="Permalink to this heading"></a></h1>
+<p>Feature extraction for the OaK framework.</p>
+<p>This module provides the FeatureExtractor class that converts Crafter’s
+info dictionary into a feature vector x(s) suitable for GVF computation.</p>
+<dl class="simple">
+<dt>Feature Vector Structure (40 dimensions):</dt><dd><ul class="simple">
+<li><p>Binary achievement features (22)</p></li>
+<li><p>Inventory count features (12)</p></li>
+<li><p>Vital status features (4)</p></li>
+<li><p>Placed object features (2)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.features.BaseFeatureExtractor" title="oak.features.BaseFeatureExtractor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseFeatureExtractor</span></code></a>()</p></td>
+<td><p>Abstract base class for feature extractors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#oak.features.FeatureExtractor" title="oak.features.FeatureExtractor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FeatureExtractor</span></code></a>()</p></td>
+<td><p>Feature extractor using privileged info dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#oak.features.PixelFeatureExtractor" title="oak.features.PixelFeatureExtractor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PixelFeatureExtractor</span></code></a>([encoder])</p></td>
+<td><p>Pixel-based feature extractor using learned representations.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.features.BaseFeatureExtractor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.features.</span></span><span class="sig-name descname"><span class="pre">BaseFeatureExtractor</span></span><a class="reference internal" href="../_modules/oak/features.html#BaseFeatureExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.BaseFeatureExtractor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract base class for feature extractors.</p>
+<p>This allows for different feature extraction strategies:
+- Privileged info dict features (implemented)
+- Pixel-based learned features (future work)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.BaseFeatureExtractor.extract">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#BaseFeatureExtractor.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.BaseFeatureExtractor.extract" title="Permalink to this definition"></a></dt>
+<dd><p>Extract feature vector from observation and info.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – Raw observation array (64, 64, 3) RGB image.</p></li>
+<li><p><strong>info</strong> – Info dictionary from Crafter environment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Feature vector x(s) as numpy array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.BaseFeatureExtractor.get_feature_dim">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_feature_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#BaseFeatureExtractor.get_feature_dim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.BaseFeatureExtractor.get_feature_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Return the dimension of the feature vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.features.</span></span><span class="sig-name descname"><span class="pre">FeatureExtractor</span></span><a class="reference internal" href="../_modules/oak/features.html#FeatureExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.FeatureExtractor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#oak.features.BaseFeatureExtractor" title="oak.features.BaseFeatureExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFeatureExtractor</span></code></a></p>
+<p>Feature extractor using privileged info dictionary.</p>
+<p>Extracts features directly from Crafter’s info dict, which provides
+ground-truth inventory counts and achievement states.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.feature_dim">
+<span class="sig-name descname"><span class="pre">feature_dim</span></span><a class="headerlink" href="#oak.features.FeatureExtractor.feature_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Total dimension of feature vector (40).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.achievement_indices">
+<span class="sig-name descname"><span class="pre">achievement_indices</span></span><a class="headerlink" href="#oak.features.FeatureExtractor.achievement_indices" title="Permalink to this definition"></a></dt>
+<dd><p>Mapping from achievement name to feature index.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.inventory_indices">
+<span class="sig-name descname"><span class="pre">inventory_indices</span></span><a class="headerlink" href="#oak.features.FeatureExtractor.inventory_indices" title="Permalink to this definition"></a></dt>
+<dd><p>Mapping from inventory item to feature index.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.vital_indices">
+<span class="sig-name descname"><span class="pre">vital_indices</span></span><a class="headerlink" href="#oak.features.FeatureExtractor.vital_indices" title="Permalink to this definition"></a></dt>
+<dd><p>Mapping from vital stat to feature index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.extract">
+<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#FeatureExtractor.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.FeatureExtractor.extract" title="Permalink to this definition"></a></dt>
+<dd><p>Extract feature vector from Crafter info dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – Raw observation (unused in privileged mode).</p></li>
+<li><p><strong>info</strong> – Info dictionary containing ‘inventory’ and ‘achievements’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>Binary achievement flags (0 or 1)</p></li>
+<li><p>Normalized inventory counts (0 to 1)</p></li>
+<li><p>Normalized vital levels (0 to 1)</p></li>
+<li><p>Binary placed object flags (0 or 1)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Feature vector of shape (40,) with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.get_feature_dim">
+<span class="sig-name descname"><span class="pre">get_feature_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#FeatureExtractor.get_feature_dim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.FeatureExtractor.get_feature_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Return the dimension of the feature vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.get_feature_index">
+<span class="sig-name descname"><span class="pre">get_feature_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#FeatureExtractor.get_feature_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.FeatureExtractor.get_feature_index" title="Permalink to this definition"></a></dt>
+<dd><p>Get the index of a named feature in the feature vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_name</strong> – Name of the feature (achievement, inventory item, or vital).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Index in the feature vector, or None if not found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.get_achievement_features">
+<span class="sig-name descname"><span class="pre">get_achievement_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#FeatureExtractor.get_achievement_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.FeatureExtractor.get_achievement_features" title="Permalink to this definition"></a></dt>
+<dd><p>Extract only the achievement portion of the feature vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.get_inventory_features">
+<span class="sig-name descname"><span class="pre">get_inventory_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#FeatureExtractor.get_inventory_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.FeatureExtractor.get_inventory_features" title="Permalink to this definition"></a></dt>
+<dd><p>Extract only the inventory portion of the feature vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.FeatureExtractor.get_vital_features">
+<span class="sig-name descname"><span class="pre">get_vital_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#FeatureExtractor.get_vital_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.FeatureExtractor.get_vital_features" title="Permalink to this definition"></a></dt>
+<dd><p>Extract only the vital stats portion of the feature vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oak.features.PixelFeatureExtractor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oak.features.</span></span><span class="sig-name descname"><span class="pre">PixelFeatureExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oak/features.html#PixelFeatureExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.PixelFeatureExtractor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#oak.features.BaseFeatureExtractor" title="oak.features.BaseFeatureExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFeatureExtractor</span></code></a></p>
+<p>Pixel-based feature extractor using learned representations.</p>
+<p>This class is a placeholder for future implementation using CNNs
+or other learned encoders to extract features from raw pixel observations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.PixelFeatureExtractor.extract">
+<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#PixelFeatureExtractor.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.PixelFeatureExtractor.extract" title="Permalink to this definition"></a></dt>
+<dd><p>Extract features from pixel observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> – RGB image observation of shape (64, 64, 3).</p></li>
+<li><p><strong>info</strong> – Info dictionary (unused in pixel mode).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Learned feature representation.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – Pixel-based extraction not yet implemented.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oak.features.PixelFeatureExtractor.get_feature_dim">
+<span class="sig-name descname"><span class="pre">get_feature_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/oak/features.html#PixelFeatureExtractor.get_feature_dim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oak.features.PixelFeatureExtractor.get_feature_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Return the dimension of the learned feature vector.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oak.agent.html" class="btn btn-neutral float-left" title="oak.agent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oak.gvf.html" class="btn btn-neutral float-right" title="oak.gvf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Richard Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
